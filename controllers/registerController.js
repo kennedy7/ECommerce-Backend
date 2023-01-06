@@ -24,7 +24,6 @@ exports.RegisterUser = async (req, res) => {
   });
   user.password = await bcrypt.hash(user.password, 10);
   user = await user.save();
-
   const token = genAuthToken(user);
   res.send(token);
 };
