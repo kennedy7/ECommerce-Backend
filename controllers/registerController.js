@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 const { User } = require("../models/user");
+const genAuthToken = require("../utils/genAuthToken");
 
-exports.RegisterController = async (req, res) => {
+exports.RegisterUser = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().min(3).max(200).required().email,
@@ -21,7 +22,13 @@ exports.RegisterController = async (req, res) => {
     email: email,
     password: password,
   });
-  await bcrypt.hash(user.password, 10);
+  user.password = await bcrypt.hash(user.password, 10);
+  user = await user.save();
 
-  await user.save();
+  const token = genAuthToken(user);
+  res.send(token);
+};
+
+exports.LoginUser = (req, res) => {
+  const { email, password } = req.body;
 };
