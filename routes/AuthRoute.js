@@ -10,6 +10,10 @@ router.post(
   validatorMiddleware(AuthValidator.Registerschema, "body"),
   RegisterUser
 );
-// router.post("/api/login", LoginUser);
+router.post(
+  "/api/login",
+  validatorMiddleware(AuthValidator.Loginschema, "body"),
+  LoginUser
+);
 
 module.exports = router;
