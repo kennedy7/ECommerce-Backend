@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const router = require("./routes/AuthRoute");
 const ProductRouter = require("./routes/productRoute");
+const StripeRouter = require("./routes/stripe");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(cors());
 app.use(router);
 app.use(ProductRouter);
+app.use(StripeRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend homepage");
