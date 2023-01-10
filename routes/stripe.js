@@ -12,7 +12,7 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
           product_data: {
             name: "T-shirt",
           },
-          unit_amount: 2000,
+          unit_amount: 200,
         },
         quantity: 1,
       },
