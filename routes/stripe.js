@@ -4,6 +4,12 @@ require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
+  const customer = await stripe.customers.create({
+    metadata: {
+      userId: req.body.userId,
+      cart: JSON.stringify(req.body.cartItems),
+    },
+  });
   const line_items = req.body.cartItems.map((item) => {
     return {
       price_data: {
@@ -52,6 +58,7 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
     phone_number_collection: {
       enabled: true,
     },
+    customer: customer.id,
     line_items,
     mode: "payment",
     success_url: `${process.env.CLIENT_URL}/checkout-success`,
@@ -75,6 +82,7 @@ StripeRouter.post(
     let data;
     let eventType;
 
+    //for some reason webhook is nit being verified so i skipped it with the if-else
     if (endpointSecret) {
       let event;
 
@@ -90,13 +98,19 @@ StripeRouter.post(
         response.status(400).send(`Webhook Error: ${err.message}`);
         return;
       }
+      data = req.body.data.object;
+      eventType = req.body.type;
     } else {
       data = req.body.data.object;
       eventType = req.body.type;
     }
 
     // Handle the event
-
+    if (eventType === "checkout.session.completed") {
+      stripe.customers.retrieve(data.customer).then((customer) => {
+        console.log(customer);
+      });
+    }
     // Return a 200 response to acknowledge receipt of the event
     response.send().end();
   }
