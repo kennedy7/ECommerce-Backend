@@ -23,7 +23,7 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   });
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    shipping_address_collection: { allowed_countries: ["US", "CA"] },
+    shipping_address_collection: { allowed_countries: ["US", "CA", "NG"] },
     shipping_options: [
       {
         shipping_rate_data: {
@@ -36,7 +36,22 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
           },
         },
       },
+      {
+        shipping_rate_data: {
+          type: "fixed_amount",
+          fixed_amount: { amount: 1500, currency: "usd" },
+          display_name: "Next day air",
+          //exactly one business day
+          delivery_estimate: {
+            minimum: { unit: "business_day", value: 1 },
+            maximum: { unit: "business_day", value: 1 },
+          },
+        },
+      },
     ],
+    phone_number_collection: {
+      enabled: true,
+    },
     line_items,
     mode: "payment",
     success_url: `${process.env.CLIENT_URL}/checkout-success`,
