@@ -112,7 +112,7 @@ StripeRouter.post(
         .catch((err) => console.log(err.message));
     }
     // Return a 200 response to acknowledge receipt of the event
-    response.send().end();
+    res.send().end();
   }
 );
 
