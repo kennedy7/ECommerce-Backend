@@ -16,6 +16,9 @@ const orderSchema = new mongoose.Schema({
       cartQuantity: { type: Number },
     },
   ],
+  subtotal: { type: Number, required: true },
+  total: { type: Number, required: true },
+  total: { type: Object, required: true },
 });
 
 module.exports = mongoose.model("Order", orderSchema);
