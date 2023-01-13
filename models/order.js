@@ -18,7 +18,9 @@ const orderSchema = new mongoose.Schema({
   ],
   subtotal: { type: Number, required: true },
   total: { type: Number, required: true },
-  total: { type: Object, required: true },
+  shipping: { type: Object, required: true },
+  deliveryStatus: { type: Object, default: "pending" },
+  paymentStatus: { type: Object, required: true },
 });
 
 module.exports = mongoose.model("Order", orderSchema);
