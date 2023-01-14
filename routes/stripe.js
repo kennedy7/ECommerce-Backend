@@ -2,6 +2,8 @@ const express = require("express");
 const StripeRouter = express.Router();
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_KEY);
+const Order = require("../models/order");
+const products = require("../products");
 
 StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   const customer = await stripe.customers.create({
@@ -68,6 +70,17 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
+const createOrder = async (customer, order) => {
+  const items = JSON.parse(customer.metadata.cart);
+
+  const newOrder = new Order({
+    userId: customer.metadata.userId,
+    customerId: data.customer,
+    products: items,
+  });
+};
+//Stripe webHook
+
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 let endpointSecret;
 
@@ -82,7 +95,7 @@ StripeRouter.post(
     let data;
     let eventType;
 
-    //for some reason webhook is nit being verified so i skipped it with the if-else
+    //for some reason webhook is not being verified so i skipped it with the if-else
     if (endpointSecret) {
       let event;
 
@@ -106,8 +119,7 @@ StripeRouter.post(
       stripe.customers
         .retrieve(data.customer)
         .then((customer) => {
-          console.log(customer);
-          console.log("data", data);
+          createOrder(customer, data);
         })
         .catch((err) => console.log(err.message));
     }
