@@ -70,6 +70,7 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
+//create Order
 const createOrder = async (customer, data) => {
   const items = JSON.parse(customer.metadata.cart);
 
