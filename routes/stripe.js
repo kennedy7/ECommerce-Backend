@@ -70,14 +70,25 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
-const createOrder = async (customer, order) => {
+const createOrder = async (customer, data) => {
   const items = JSON.parse(customer.metadata.cart);
 
   const newOrder = new Order({
     userId: customer.metadata.userId,
     customerId: data.customer,
+    paymentIntentId: data.payment_intent,
     products: items,
+    subtotal: data.amount_subtotal,
+    total: data.amount_total,
+    shipping: data.customer_details,
+    paymentStatus: data.payment_status,
   });
+  try {
+    const savedOrder = await newOrder.save();
+    console.log("Processed Order:", savedOrder);
+  } catch (err) {
+    console.log(err);
+  }
 };
 //Stripe webHook
 
@@ -95,7 +106,7 @@ StripeRouter.post(
     let data;
     let eventType;
 
-    //for some reason webhook is not being verified so i skipped it with the if-else
+    //for some reason webhook is nit being verified so i skipped it with the if-else
     if (endpointSecret) {
       let event;
 
@@ -119,6 +130,8 @@ StripeRouter.post(
       stripe.customers
         .retrieve(data.customer)
         .then((customer) => {
+          // console.log(customer);
+          // console.log("data", data);
           createOrder(customer, data);
         })
         .catch((err) => console.log(err.message));

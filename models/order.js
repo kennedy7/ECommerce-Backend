@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema(
     customerId: {
       type: String,
     },
+    paymentIntentId: { type: String },
     products: [
       {
         id: { type: String },
