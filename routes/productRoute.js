@@ -8,7 +8,7 @@ const validatorMiddleware = require("../validators/middlewares");
 const ProductValidator = require("../validators/productValidator");
 
 ProductRouter.post(
-  "/products",
+  "/api/products",
   validatorMiddleware(ProductValidator.Productschema, "body"),
   CreateProduct
 );

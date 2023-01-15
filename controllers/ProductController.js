@@ -16,7 +16,7 @@ exports.CreateProduct = async (req, res) => {
           image: uploadResponse,
         });
         const savedProduct = await product.save();
-        req.statusCode(200).send(savedProduct);
+        res.status(200).send(savedProduct);
       }
     }
   } catch (err) {}
