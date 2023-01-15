@@ -16,8 +16,7 @@ exports.CreateProduct = async (req, res) => {
           image: uploadResponse,
         });
         const savedProduct = await product.save();
-        req.statusCode(200);
-        console.log(savedProduct).send(savedProduct);
+        req.statusCode(200).send(savedProduct);
       }
     }
   } catch (err) {}
@@ -26,6 +25,10 @@ exports.CreateProduct = async (req, res) => {
 };
 
 exports.fetchProducts = async (req, res) => {
-  const products = await Product.find();
-  res.status(200).send(products);
+  try {
+    const products = await Product.find();
+    res.status(200).send(products);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
