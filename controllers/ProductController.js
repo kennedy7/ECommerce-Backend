@@ -19,16 +19,17 @@ exports.CreateProduct = async (req, res) => {
         res.status(200).send(savedProduct);
       }
     }
-  } catch (err) {}
-  console.log(err);
-  res.status(500).send(err);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
 };
 
 exports.fetchProducts = async (req, res) => {
   try {
     const products = await Product.find();
     res.status(200).send(products);
-  } catch (err) {
-    res.status(500).send(err);
+  } catch (error) {
+    res.status(500).send(error);
   }
 };

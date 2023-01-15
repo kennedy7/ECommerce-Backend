@@ -6,7 +6,7 @@ const ProductValidator = {
     brand: Joi.string().min(5).max(200).required(),
     desc: Joi.string().min(10).max(1000).required(),
     price: Joi.number().min(2).max(10000).required(),
-    image: Joi.object().min(10).max(1000).required(),
+    image: Joi.string().min(10).required(),
   }),
 };
 
