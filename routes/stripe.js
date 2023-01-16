@@ -87,6 +87,8 @@ const createOrder = async (customer, data) => {
   try {
     const savedOrder = await newOrder.save();
     console.log("Processed Order:", savedOrder);
+
+    //order confirmation email
   } catch (err) {
     console.log(err);
   }

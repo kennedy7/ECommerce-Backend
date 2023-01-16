@@ -13,6 +13,6 @@ ProductRouter.post(
   CreateProduct
 );
 
-ProductRouter.get("/products", fetchProducts);
+ProductRouter.get("/api/products", fetchProducts);
 
 module.exports = ProductRouter;
