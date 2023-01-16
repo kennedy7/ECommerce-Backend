@@ -1,3 +1,4 @@
+const { boolean } = require("joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -20,6 +21,10 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     maxlength: 1000,
     unique: true,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
 });
 
