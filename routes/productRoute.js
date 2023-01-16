@@ -4,7 +4,7 @@ const {
   fetchProducts,
 } = require("../controllers/ProductController");
 const ProductRouter = express.Router();
-const validatorMiddleware = require("../validators/middlewares");
+const validatorMiddleware = require("../middlewares/validatormiddleware");
 const ProductValidator = require("../validators/productValidator");
 
 ProductRouter.post(
