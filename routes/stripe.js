@@ -5,6 +5,8 @@ const stripe = require("stripe")(process.env.STRIPE_KEY);
 const Order = require("../models/order");
 const products = require("../products");
 
+// stripe listen --forward-to http://localhost:5000/api/stripe/webhook
+
 StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
   const customer = await stripe.customers.create({
     metadata: {
