@@ -17,7 +17,7 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
         currency: "usd",
         product_data: {
           name: item.name,
-          images: [item.image],
+          images: [item.image.url],
           description: item.desc,
           metadata: {
             id: item.id,
@@ -71,13 +71,11 @@ StripeRouter.post("/api/stripe/create-checkout-session", async (req, res) => {
 
 //create Order
 const createOrder = async (customer, data, lineItems) => {
-  const items = JSON.parse(customer.metadata.cart);
-
   const newOrder = new Order({
     userId: customer.metadata.userId,
     customerId: data.customer,
     paymentIntentId: data.payment_intent,
-    products: lineItems,
+    products: lineItems.data,
     subtotal: data.amount_subtotal,
     total: data.amount_total,
     shipping: data.customer_details,
