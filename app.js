@@ -5,6 +5,7 @@ require("dotenv").config();
 const router = require("./routes/AuthRoute");
 const ProductRouter = require("./routes/productRoute");
 const StripeRouter = require("./routes/stripe");
+const userStatsRouter = require("./routes/users");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(router);
 app.use(ProductRouter);
 app.use(StripeRouter);
+app.use(userStatsRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend homepage");
