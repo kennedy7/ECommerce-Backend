@@ -1,3 +1,5 @@
+const { User } = require("../models/user");
+const { auth, isAdmin, isUser } = require("../middlewares/auth");
 const userStatsRouter = require("express").Router();
 
 userStatsRouter.get("/stat", async (req, res) => {

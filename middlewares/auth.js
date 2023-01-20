@@ -14,6 +14,16 @@ const auth = (req, res, next) => {
   }
 };
 
+const isUser = (req, res, next) => {
+  auth(req, res, () => {
+    if (req.user._id === req.params.id || req.user.isAdmin) {
+      next();
+    } else {
+      res.status(403).send("Access denied, Not authorized");
+    }
+  });
+};
+
 const isAdmin = (req, res, next) => {
   auth(req, res, () => {
     if (req.user.isAdmin) {
