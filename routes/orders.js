@@ -1,16 +1,16 @@
-const User = require("../models/user");
+const Order = require("../models/order");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
 const userStatsRouter = require("express").Router();
 const moment = require("moment");
 
-userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
+userStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
     .format("YYYY-MM-DD HH-mm-ss");
 
   try {
-    const users = await User.aggregate([
+    const users = await Order.aggregate([
       {
         //starting from previous month i.e >=
         $match: { createdAt: { $gte: new Date(previousMonth) } },
@@ -34,4 +34,4 @@ userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
   }
 });
 
-module.exports = userStatsRouter;
+module.exports = ordersStatsRouter;
