@@ -28,6 +28,7 @@ userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
       },
     ]);
     res.status(200).send(users);
+    // console.log(users);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
