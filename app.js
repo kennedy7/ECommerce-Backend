@@ -20,7 +20,7 @@ app.use(userStatsRouter);
 app.use(ordersStatsRouter);
 
 app.listen(PORT, () => {
-  console.log(`Ecommerce backend running on port ${PORT} `);
+  console.log(`Ecommerce Backend Server running on port ${PORT} `);
 });
 
 const url = process.env.DB_URL;
@@ -30,5 +30,5 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("database connected successfully"))
-  .catch((err) => console.log(`connection to database failed`, err.message));
+  .then(() => console.log("Database Connected successfully!"))
+  .catch((err) => console.log(`Connection to database failed`, err.message));
