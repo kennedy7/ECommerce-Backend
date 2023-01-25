@@ -19,10 +19,6 @@ app.use(StripeRouter);
 app.use(userStatsRouter);
 app.use(ordersStatsRouter);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the backend homepage");
-});
-
 app.listen(PORT, () => {
   console.log(`Ecommerce backend running on port ${PORT} `);
 });
