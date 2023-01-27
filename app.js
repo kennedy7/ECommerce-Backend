@@ -7,6 +7,7 @@ const ProductRouter = require("./routes/productRoute");
 const StripeRouter = require("./routes/stripe");
 const userStatsRouter = require("./routes/users");
 const ordersStatsRouter = require("./routes/orders");
+const EarningsStatsRouter = require("./routes/earnings");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ app.use(ProductRouter);
 app.use(StripeRouter);
 app.use(userStatsRouter);
 app.use(ordersStatsRouter);
+app.use(EarningsStatsRouter);
 
 app.listen(PORT, () => {
   console.log(`Ecommerce Backend Server running on port ${PORT} `);
