@@ -1,3 +1,4 @@
+const Order = require("../models/order");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
 const EarningsStatsRouter = require("express").Router();
 const moment = require("moment");
@@ -10,7 +11,7 @@ EarningsStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
     .format("YYYY-MM-DD HH-mm-ss");
 
   try {
-    const orders = await Order.aggregate([
+    const income = await Order.aggregate([
       {
         //starting from previous month i.e >=
         $match: { createdAt: { $gte: new Date(previousMonth) } },
@@ -18,16 +19,17 @@ EarningsStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
       {
         $project: {
           month: { $month: "$createdAt" },
+          sales: "$total",
         },
       },
       {
         $group: {
           _id: "$month",
-          total: { $sum: 1 },
+          total: { $sum: "$sales" },
         },
       },
     ]);
-    res.status(200).send(orders);
+    res.status(200).send(income);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
