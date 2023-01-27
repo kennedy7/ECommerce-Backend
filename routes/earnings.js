@@ -4,36 +4,40 @@ const EarningsStatsRouter = require("express").Router();
 const moment = require("moment");
 
 //GET INCOME STATS
-EarningsStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
-  const previousMonth = moment()
-    .month(moment().month() - 1)
-    .set("date", 1)
-    .format("YYYY-MM-DD HH-mm-ss");
+EarningsStatsRouter.get(
+  "/api/orders/income/stats",
+  isAdmin,
+  async (req, res) => {
+    const previousMonth = moment()
+      .month(moment().month() - 1)
+      .set("date", 1)
+      .format("YYYY-MM-DD HH-mm-ss");
 
-  try {
-    const income = await Order.aggregate([
-      {
-        //starting from previous month i.e >=
-        $match: { createdAt: { $gte: new Date(previousMonth) } },
-      },
-      {
-        $project: {
-          month: { $month: "$createdAt" },
-          sales: "$total",
+    try {
+      const income = await Order.aggregate([
+        {
+          //starting from previous month i.e >=
+          $match: { createdAt: { $gte: new Date(previousMonth) } },
         },
-      },
-      {
-        $group: {
-          _id: "$month",
-          total: { $sum: "$sales" },
+        {
+          $project: {
+            month: { $month: "$createdAt" },
+            sales: "$total",
+          },
         },
-      },
-    ]);
-    res.status(200).send(income);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
+        {
+          $group: {
+            _id: "$month",
+            total: { $sum: "$sales" },
+          },
+        },
+      ]);
+      res.status(200).send(income);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
   }
-});
+);
 
 module.exports = EarningsStatsRouter;
