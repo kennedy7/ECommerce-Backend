@@ -1,9 +1,9 @@
-const Order = require("../models/order");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
-const ordersStatsRouter = require("express").Router();
+const EarningsStatsRouter = require("express").Router();
 const moment = require("moment");
 
-ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
+//GET INCOME STATS
+EarningsStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
@@ -34,4 +34,4 @@ ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
   }
 });
 
-module.exports = ordersStatsRouter;
+module.exports = EarningsStatsRouter;
