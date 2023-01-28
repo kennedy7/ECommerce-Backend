@@ -1,5 +1,5 @@
 const Order = require("../models/order");
-const { auth, isAdmin, isUser } = require("../middlewares/auth");
+const { isAdmin } = require("../middlewares/auth");
 const ordersStatsRouter = require("express").Router();
 const moment = require("moment");
 
@@ -34,7 +34,7 @@ ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
   }
 });
 
-//GET INCOME STATS
+//GET MONTHLY INCOME STATS
 ordersStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
@@ -56,6 +56,38 @@ ordersStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
       {
         $group: {
           _id: "$month",
+          total: { $sum: "$sales" },
+        },
+      },
+    ]);
+    res.status(200).send(income);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+//GET A WEEK SALES
+ordersStatsRouter.get("/api/week-sales", async (req, res) => {
+  const last7Days = moment()
+    .day(moment().day() - 7)
+    .format("YYYY-MM-DD HH-mm-ss");
+
+  try {
+    const income = await Order.aggregate([
+      {
+        //starting from last 7 days i.e >=
+        $match: { createdAt: { $gte: new Date(last7Days) } },
+      },
+      {
+        $project: {
+          day: { $dayOfWeek: "$createdAt" },
+          sales: "$total",
+        },
+      },
+      {
+        $group: {
+          _id: "$day",
           total: { $sum: "$sales" },
         },
       },
