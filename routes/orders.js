@@ -35,7 +35,7 @@ ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
 });
 
 //GET MONTHLY INCOME STATS
-ordersStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
+ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
@@ -68,7 +68,7 @@ ordersStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
 });
 
 //GET A WEEK SALES
-ordersStatsRouter.get("/api/week-sales", async (req, res) => {
+ordersStatsRouter.get("/api/orders/week-sales", async (req, res) => {
   const last7Days = moment()
     .day(moment().day() - 7)
     .format("YYYY-MM-DD HH-mm-ss");
