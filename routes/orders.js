@@ -35,7 +35,7 @@ ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
 });
 
 //GET INCOME STATS
-ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
+ordersStatsRouter.get("/api/income/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
