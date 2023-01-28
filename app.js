@@ -19,7 +19,6 @@ app.use(ProductRouter);
 app.use(StripeRouter);
 app.use(userStatsRouter);
 app.use(ordersStatsRouter);
-app.use(EarningsStatsRouter);
 
 app.listen(PORT, () => {
   console.log(`Ecommerce Backend Server running on port ${PORT} `);
