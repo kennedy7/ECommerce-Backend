@@ -68,7 +68,7 @@ ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
 });
 
 //GET A WEEK SALES
-ordersStatsRouter.get("/api/orders/week-sales", async (req, res) => {
+ordersStatsRouter.get("/api/orders/week-sales", isAdmin, async (req, res) => {
   const last7Days = moment()
     .day(moment().day() - 7)
     .format("YYYY-MM-DD HH-mm-ss");
@@ -93,6 +93,20 @@ ordersStatsRouter.get("/api/orders/week-sales", async (req, res) => {
       },
     ]);
     res.status(200).send(income);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+//GET ORDERS/ RECENT TRANSACTIONs
+ordersStatsRouter.get("/api/", isAdmin, async (req, res) => {
+  const query = req.query.new;
+  try {
+    const orders = query
+      ? await Order.find().sort({ _id: -1 }).limit(4)
+      : await Order.find().sort({ _id: -1 });
+    res.status(200).send(orders);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
