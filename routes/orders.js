@@ -100,11 +100,11 @@ ordersStatsRouter.get("/api/orders/week-sales", isAdmin, async (req, res) => {
 });
 
 //GET ORDERS/ RECENT TRANSACTIONs
-ordersStatsRouter.get("/api/", isAdmin, async (req, res) => {
+ordersStatsRouter.get("/api/orders/", isAdmin, async (req, res) => {
   const query = req.query.new;
   try {
     const orders = query
-      ? await Order.find().sort({ _id: -1 }).limit(4)
+      ? await Order.find().sort({ _id: -1 }).limit(5)
       : await Order.find().sort({ _id: -1 });
     res.status(200).send(orders);
   } catch (err) {

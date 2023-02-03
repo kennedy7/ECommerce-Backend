@@ -17,13 +17,21 @@ userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
+          time: {
+            $concat: [
+              { $substr: [{ $year: "$createdAt" }, 0, 4] },
+              " - ",
+              { $substr: [{ $month: "$createdAt" }, 0, 2] },
+            ],
+          },
         },
       },
+
       {
         $group: {
-          _id: "$month",
+          _id: "$time",
           total: { $sum: 1 },
+          // year: "$year",
         },
       },
     ]);
