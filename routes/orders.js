@@ -3,6 +3,7 @@ const { isAdmin } = require("../middlewares/auth");
 const ordersStatsRouter = require("express").Router();
 const moment = require("moment");
 
+//GET MONTHLY ORDERS STATS
 ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
@@ -11,18 +12,39 @@ ordersStatsRouter.get("/api/orders/stats", isAdmin, async (req, res) => {
 
   try {
     const orders = await Order.aggregate([
+      // {
+      //   //starting from previous month i.e >=
+      //   $match: { createdAt: { $gte: new Date(previousMonth) } },
+      // },
+      // {
+      //   $project: {
+      //     month: { $month: "$createdAt" },
+      //   },
+      // },
+      // {
+      //   $group: {
+      //     _id: "$month",
+      //     total: { $sum: 1 },
+      //   },
       {
         //starting from previous month i.e >=
         $match: { createdAt: { $gte: new Date(previousMonth) } },
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
+          time: {
+            $concat: [
+              { $substr: [{ $year: "$createdAt" }, 0, 4] },
+              " - ",
+              { $substr: [{ $month: "$createdAt" }, 0, 2] },
+            ],
+          },
         },
       },
+
       {
         $group: {
-          _id: "$month",
+          _id: "$time",
           total: { $sum: 1 },
         },
       },
@@ -43,19 +65,41 @@ ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
 
   try {
     const income = await Order.aggregate([
+      // {
+      //   //starting from previous month i.e >=
+      //   $match: { createdAt: { $gte: new Date(previousMonth) } },
+      // },
+      // {
+      //   $project: {
+      //     month: { $month: "$createdAt" },
+      //     sales: "$total",
+      //   },
+      // },
+      // {
+      //   $group: {
+      //     _id: "$month",
+      //     total: { $sum: "$sales" },
+      //   },
       {
         //starting from previous month i.e >=
         $match: { createdAt: { $gte: new Date(previousMonth) } },
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
+          time: {
+            $concat: [
+              { $substr: [{ $year: "$createdAt" }, 0, 4] },
+              " - ",
+              { $substr: [{ $month: "$createdAt" }, 0, 2] },
+            ],
+          },
           sales: "$total",
         },
       },
+
       {
         $group: {
-          _id: "$month",
+          _id: "$time",
           total: { $sum: "$sales" },
         },
       },
@@ -67,7 +111,7 @@ ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
   }
 });
 
-//GET A WEEK SALES
+//GET A WEEK SALES [chart]
 ordersStatsRouter.get("/api/orders/week-sales", isAdmin, async (req, res) => {
   const last7Days = moment()
     .day(moment().day() - 7)
