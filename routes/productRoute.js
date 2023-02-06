@@ -19,6 +19,6 @@ ProductRouter.post(
 
 ProductRouter.get("/api/products", fetchAllProducts);
 ProductRouter.get("/api/find/:id", fetchProduct);
-ProductRouter.delete("/api/:id", DeleteProduct);
+ProductRouter.delete("/api/:id", isAdmin, DeleteProduct);
 
 module.exports = ProductRouter;
