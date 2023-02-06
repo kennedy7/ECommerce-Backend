@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   CreateProduct,
-  fetchProducts,
+  fetchAllProducts,
 } = require("../controllers/ProductController");
 const { isAdmin } = require("../middlewares/auth");
 const ProductRouter = express.Router();
@@ -15,6 +15,6 @@ ProductRouter.post(
   CreateProduct
 );
 
-ProductRouter.get("/api/products", fetchProducts);
+ProductRouter.get("/api/products", fetchAllProducts);
 
 module.exports = ProductRouter;
