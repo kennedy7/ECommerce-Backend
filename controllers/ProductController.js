@@ -41,3 +41,24 @@ exports.fetchProduct = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+//Delete product
+exports.DeleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) res.status(404).send("Product not found!");
+    if (product.image.public_id) {
+      const destroyResponse = cloudinary.uploader.destroy(
+        product.image.public_id
+      );
+      if (destroyResponse) {
+        const deletedProduct = await product.findByIdAndDelete(req.params.id);
+        res.status(200).send(deletedProduct);
+      }
+    } else {
+      console.log("Action terminated, Failed to delete product image...");
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
