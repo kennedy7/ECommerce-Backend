@@ -4,6 +4,7 @@ const {
   fetchAllProducts,
   fetchProduct,
   DeleteProduct,
+  UpdateProduct,
 } = require("../controllers/ProductController");
 const { isAdmin } = require("../middlewares/auth");
 const ProductRouter = express.Router();
@@ -20,5 +21,6 @@ ProductRouter.post(
 ProductRouter.get("/api/products", fetchAllProducts);
 ProductRouter.get("/api/products/find/:id", fetchProduct);
 ProductRouter.delete("/api/products/:id", isAdmin, DeleteProduct);
+ProductRouter.patch("/api/products/:id", isAdmin, UpdateProduct);
 
 module.exports = ProductRouter;

@@ -42,17 +42,61 @@ exports.fetchProduct = async (req, res) => {
   }
 };
 
+//update product
+
+exports.UpdateProduct = async (req, res) => {
+  try {
+    if (req.body.productImg) {
+      const destroyResponse = await cloudinary.uploader.destroy(
+        req.body.product.image.public_id
+      );
+      if (destroyResponse) {
+        const uploadResponse = await cloudinary.uploader.upload(
+          req.body.productImg
+        );
+        upload_preset: "online-Shop";
+        if (uploadResponse) {
+          const updatedproduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            {
+              $set: {
+                ...req.body.product,
+                image: uploadResponse,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).send(updatedproduct);
+        }
+      }
+    } else {
+      const updatedproduct = await Product.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            ...req.body.product,
+          },
+        },
+        { new: true }
+      );
+      res.status(200).send(updatedproduct);
+    }
+  } catch (err) {
+    res.status(500).send(error);
+  }
+};
+
 //Delete product
 exports.DeleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) res.status(404).send("Product not found!");
+    if (!product) return res.status(404).send("Product not found!");
     if (product.image.public_id) {
       const destroyResponse = cloudinary.uploader.destroy(
         product.image.public_id
       );
       if (destroyResponse) {
-        const deletedProduct = await product.findByIdAndDelete(req.params.id);
+        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
         res.status(200).send(deletedProduct);
       }
     } else {
