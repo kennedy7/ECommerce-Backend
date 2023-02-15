@@ -1,12 +1,13 @@
-const Order = require("../models/order");
 const { isAdmin } = require("../middlewares/auth");
 const ordersStatsRouter = require("express").Router();
-const moment = require("moment");
+
 const {
   getMonthlyOrdersStats,
   getMonthlyIncomeStats,
   getOneWeekSales,
   getRecentOrders,
+  UpdateOrder,
+  getOrder,
 } = require("../controllers/OrderController");
 
 //GET MONTHLY ORDERS STATS
@@ -24,4 +25,9 @@ ordersStatsRouter.get("/api/orders/week-sales", isAdmin, getOneWeekSales);
 
 //GET ORDERS/ RECENT TRANSACTIONs
 ordersStatsRouter.get("/api/orders/", isAdmin, getRecentOrders);
+//update An Order
+ordersStatsRouter.patch("/api/orders/:id", UpdateOrder);
+//Get An Order
+ordersStatsRouter.get("/api/orders/findOne/:id", getOrder);
+
 module.exports = ordersStatsRouter;
