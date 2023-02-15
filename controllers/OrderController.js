@@ -96,7 +96,6 @@ exports.getMonthlyIncomeStats = async (req, res) => {
 };
 
 //GET A WEEK SALES [chart]
-
 exports.getOneWeekSales = async (req, res) => {
   const last7Days = moment()
     .day(moment().day() - 7)
@@ -122,6 +121,20 @@ exports.getOneWeekSales = async (req, res) => {
       },
     ]);
     res.status(200).send(income);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
+
+//GET ORDERS/ RECENT TRANSACTIONs
+exports.getRecentOrders = async (req, res) => {
+  const query = req.query.new;
+  try {
+    const orders = query
+      ? await Order.find().sort({ _id: -1 }).limit(5)
+      : await Order.find().sort({ _id: -1 });
+    res.status(200).send(orders);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);

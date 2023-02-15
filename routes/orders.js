@@ -6,6 +6,7 @@ const {
   getMonthlyOrdersStats,
   getMonthlyIncomeStats,
   getOneWeekSales,
+  getRecentOrders,
 } = require("../controllers/OrderController");
 
 //GET MONTHLY ORDERS STATS
@@ -22,16 +23,5 @@ ordersStatsRouter.get(
 ordersStatsRouter.get("/api/orders/week-sales", isAdmin, getOneWeekSales);
 
 //GET ORDERS/ RECENT TRANSACTIONs
-ordersStatsRouter.get("/api/orders/", isAdmin, async (req, res) => {
-  const query = req.query.new;
-  try {
-    const orders = query
-      ? await Order.find().sort({ _id: -1 }).limit(5)
-      : await Order.find().sort({ _id: -1 });
-    res.status(200).send(orders);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
-});
+ordersStatsRouter.get("/api/orders/", isAdmin, getRecentOrders);
 module.exports = ordersStatsRouter;
