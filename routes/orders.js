@@ -2,65 +2,20 @@ const Order = require("../models/order");
 const { isAdmin } = require("../middlewares/auth");
 const ordersStatsRouter = require("express").Router();
 const moment = require("moment");
-const { getMonthlyOrdersStats } = require("../controllers/OrderController");
+const {
+  getMonthlyOrdersStats,
+  getMonthlyIncomesStats,
+} = require("../controllers/OrderController");
 
 //GET MONTHLY ORDERS STATS
 ordersStatsRouter.get("/api/orders/stats", isAdmin, getMonthlyOrdersStats);
 
 //GET MONTHLY INCOME STATS
-ordersStatsRouter.get("/api/orders/income/stats", isAdmin, async (req, res) => {
-  const previousMonth = moment()
-    .month(moment().month() - 1)
-    .set("date", 1)
-    .format("YYYY-MM-DD HH-mm-ss");
-
-  try {
-    const income = await Order.aggregate([
-      // {
-      //   //starting from previous month i.e >=
-      //   $match: { createdAt: { $gte: new Date(previousMonth) } },
-      // },
-      // {
-      //   $project: {
-      //     month: { $month: "$createdAt" },
-      //     sales: "$total",
-      //   },
-      // },
-      // {
-      //   $group: {
-      //     _id: "$month",
-      //     total: { $sum: "$sales" },
-      //   },
-      {
-        //starting from previous month i.e >=
-        $match: { createdAt: { $gte: new Date(previousMonth) } },
-      },
-      {
-        $project: {
-          time: {
-            $concat: [
-              { $substr: [{ $year: "$createdAt" }, 0, 4] },
-              " - ",
-              { $substr: [{ $month: "$createdAt" }, 0, 2] },
-            ],
-          },
-          sales: "$total",
-        },
-      },
-
-      {
-        $group: {
-          _id: "$time",
-          total: { $sum: "$sales" },
-        },
-      },
-    ]);
-    res.status(200).send(income);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
-});
+ordersStatsRouter.get(
+  "/api/orders/income/stats",
+  isAdmin,
+  getMonthlyIncomeStats
+);
 
 //GET A WEEK SALES [chart]
 ordersStatsRouter.get("/api/orders/week-sales", isAdmin, async (req, res) => {
