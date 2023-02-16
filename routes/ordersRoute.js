@@ -1,4 +1,4 @@
-const { isAdmin } = require("../middlewares/auth");
+const { isAdmin, auth } = require("../middlewares/auth");
 const ordersStatsRouter = require("express").Router();
 
 const {
@@ -26,8 +26,8 @@ ordersStatsRouter.get("/api/orders/week-sales", isAdmin, getOneWeekSales);
 //GET ORDERS/ RECENT TRANSACTIONs
 ordersStatsRouter.get("/api/orders/", isAdmin, getRecentOrders);
 //update An Order
-ordersStatsRouter.patch("/api/orders/:id", UpdateOrder);
+ordersStatsRouter.patch("/api/orders/:id", isAdmin, UpdateOrder);
 //Get An Order
-ordersStatsRouter.get("/api/orders/findOne/:id", getOrder);
+ordersStatsRouter.get("/api/orders/findOne/:id", auth, getOrder);
 
 module.exports = ordersStatsRouter;
