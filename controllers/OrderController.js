@@ -144,7 +144,7 @@ exports.getRecentOrders = async (req, res) => {
 //Update Order
 exports.UpdateOrder = async (req, res) => {
   try {
-    const updatedOrder = Order.findByIdAndUpdate(
+    const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
       {
         $set: req.body,
@@ -161,10 +161,10 @@ exports.UpdateOrder = async (req, res) => {
 exports.getOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    if (req.user._id !== req.userId || !req.user.isAdmin) {
+    if (req.user._id !== order.userId || !req.user.isAdmin) {
       return res.status(403).send("Access Denied, Not Authorized!");
     }
-    res.status(200).send(order);
+    return res.status(200).send(order);
   } catch (err) {
     res.status(500).send(err);
   }
