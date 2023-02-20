@@ -164,7 +164,7 @@ exports.getOrder = async (req, res) => {
     if (req.user._id !== order.userId || !req.user.isAdmin) {
       return res.status(403).send("Access Denied, Not Authorized!");
     }
-    return res.status(200).send(order);
+    res.status(200).send(order);
   } catch (err) {
     res.status(500).send(err);
   }
