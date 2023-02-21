@@ -2,6 +2,7 @@ const User = require("../models/user");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
 const usersRouter = require("express").Router();
 const moment = require("moment");
+const { getAllUsers, deleteUser } = require("../controllers/authController");
 
 //get users Stats for the month compare to last month
 usersRouter.get("/api/users/stats", isAdmin, async (req, res) => {
@@ -42,5 +43,8 @@ usersRouter.get("/api/users/stats", isAdmin, async (req, res) => {
     res.status(500).send(err);
   }
 });
+
+usersRouter.get("/api/users", isAdmin, getAllUsers);
+usersRouter.delete("api/users/:id", isAdmin, deleteUser);
 
 module.exports = usersRouter;
