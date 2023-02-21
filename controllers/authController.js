@@ -11,6 +11,14 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
+exports.deleteUser = async (req, res) => {
+  try {
+    const deletedUser = User.findByIdAndDelete(req.params.id);
+    res.status(200).send(deletedUser);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 exports.RegisterUser = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
