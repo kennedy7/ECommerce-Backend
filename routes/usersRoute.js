@@ -1,9 +1,10 @@
 const User = require("../models/user");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
-const userStatsRouter = require("express").Router();
+const usersRouter = require("express").Router();
 const moment = require("moment");
 
-userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
+//get users Stats for the month compare to last month
+usersRouter.get("/api/users/stats", isAdmin, async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
@@ -31,7 +32,6 @@ userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
         $group: {
           _id: "$time",
           total: { $sum: 1 },
-          // year: "$year",
         },
       },
     ]);
@@ -43,4 +43,4 @@ userStatsRouter.get("/api/users/stats", isAdmin, async (req, res) => {
   }
 });
 
-module.exports = userStatsRouter;
+module.exports = usersRouter;
