@@ -28,3 +28,12 @@ exports.LoginUser = async (req, res) => {
   const token = genAuthToken(user);
   res.send(token);
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
