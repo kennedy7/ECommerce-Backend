@@ -43,8 +43,10 @@ usersRouter.get("/api/users/stats", isAdmin, async (req, res) => {
     res.status(500).send(err);
   }
 });
-
+//get all users route
 usersRouter.get("/api/users", isAdmin, getAllUsers);
+
+//delete a user by id
 usersRouter.delete("api/users/:id", isAdmin, deleteUser);
 
 module.exports = usersRouter;
