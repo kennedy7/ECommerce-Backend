@@ -2,6 +2,16 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const genAuthToken = require("../utils/genAuthToken");
 
+//get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().sort({ _id: -1 });
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 exports.RegisterUser = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send(" User with this email exist... ");
@@ -27,13 +37,4 @@ exports.LoginUser = async (req, res) => {
   if (!isValid) return res.status(400).send(" Invalid Email or Password ");
   const token = genAuthToken(user);
   res.send(token);
-};
-
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).send(users);
-  } catch (error) {
-    res.status(500).send(error);
-  }
 };
