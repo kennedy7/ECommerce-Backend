@@ -11,6 +11,15 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
+// exports.getUser = async (req, res) => {
+//   try {
+//     const user = User.findById({ _id });
+//   } catch (err) {
+//     res.status(500).send(err);
+//   }
+// };
+
+//delete user by id
 exports.deleteUser = async (req, res) => {
   try {
     const deletedUser = User.findByIdAndDelete(req.params.id);
@@ -20,6 +29,7 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+//Register user controller
 exports.RegisterUser = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send(" User with this email exist... ");
@@ -37,6 +47,7 @@ exports.RegisterUser = async (req, res) => {
   res.send(token);
 };
 
+//login user controller
 exports.LoginUser = async (req, res) => {
   const { email, password } = req.body;
   let user = await User.findOne({ email: email });
