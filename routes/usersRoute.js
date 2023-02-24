@@ -56,6 +56,7 @@ usersRouter.get("/api/users/find/:id", isUser, getUser);
 
 //updateUser
 usersRouter.patch("/api/users/:id", isUser, updateUser);
+
 //delete a user by id
 usersRouter.delete("/api/users/:id", isAdmin, deleteUser);
 
