@@ -13,7 +13,9 @@ exports.getAllUsers = async (req, res) => {
 };
 exports.getUser = async (req, res) => {
   try {
-    const user = User.findById(req.params.id);
+    const user = await User.findById(req.params.id);
+
+    //specifying to avoid sending the password
     res.status(200).send({
       id: user._id,
       name: user.name,
