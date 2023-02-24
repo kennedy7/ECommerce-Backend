@@ -31,17 +31,18 @@ exports.getUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { name, email, isAdmin } = req.body;
   try {
-    const user = User.findById(req.params.id);
+    const user = await User.findById(req.params.id);
+    //email change check
     if (!(user.email === req.body.email)) {
-      newEmail = User.findOne({ email: req.body.email });
-      if (email) return res.status(400).send("email is already in use");
+      const emailInUse = User.findOne({ email: req.body.email });
+      if (emailInUse) return res.status(400).send("email is already in use");
     }
     if (req.body.password && user) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = bcrypt.hash(req.body.password, salt);
       user.password = hashedPassword;
     }
-    const updatedUser = User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         name: name,
