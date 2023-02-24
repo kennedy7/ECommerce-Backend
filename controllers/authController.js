@@ -52,7 +52,12 @@ exports.updateUser = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).send(updatedUser);
+    res.status(200).send({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    });
   } catch (error) {
     res.status(500).send(err);
   }
