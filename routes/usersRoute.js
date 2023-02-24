@@ -49,6 +49,7 @@ usersRouter.get("/api/users/stats", isAdmin, async (req, res) => {
 });
 //get all users route
 usersRouter.get("/api/users", isAdmin, getAllUsers);
+//get user by id
 usersRouter.get("/api/find/:id", isUser, getUser);
 
 //delete a user by id
