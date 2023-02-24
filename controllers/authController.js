@@ -27,6 +27,36 @@ exports.getUser = async (req, res) => {
   }
 };
 
+//update user
+exports.updateUser = async (req, res) => {
+  const { name, email, isAdmin } = req.body;
+  try {
+    const user = User.findById(req.params.id);
+    if (!(user.email === req.body.email)) {
+      newEmail = User.findOne({ email: req.body.email });
+      if (email) return res.status(400).send("email is already in use");
+    }
+    if (req.body.password && user) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = bcrypt.hash(req.body.password, salt);
+      user.password = hashedPassword;
+    }
+    const updatedUser = User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: name,
+        email: email,
+        isAdmin: isAdmin,
+        password: user.password,
+      },
+      { new: true }
+    );
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send(err);
+  }
+};
+
 //delete user by id
 exports.deleteUser = async (req, res) => {
   try {
