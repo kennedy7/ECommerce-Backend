@@ -11,18 +11,24 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
-// exports.getUser = async (req, res) => {
-//   try {
-//     const user = User.findById({ _id });
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// };
+exports.getUser = async (req, res) => {
+  try {
+    const user = User.findById(req.params.id);
+    res.status(200).send({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
 
 //delete user by id
 exports.deleteUser = async (req, res) => {
   try {
-    const deletedUser = User.findByIdAndDelete(req.params.id);
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
     res.status(200).send(deletedUser);
   } catch (error) {
     res.status(500).send(error);
