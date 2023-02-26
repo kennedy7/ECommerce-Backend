@@ -37,6 +37,7 @@ exports.updateUser = async (req, res) => {
       const emailInUse = User.findOne({ email: req.body.email });
       if (emailInUse) return res.status(400).send("email is already in use");
     }
+    //only user and change his/her password
     if (req.body.password && user) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = bcrypt.hash(req.body.password, salt);
