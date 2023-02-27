@@ -1,7 +1,5 @@
-const User = require("../models/user");
 const { auth, isAdmin, isUser } = require("../middlewares/auth");
 const usersRouter = require("express").Router();
-const moment = require("moment");
 
 const {
   getUsersMonthlyStats,
@@ -13,6 +11,7 @@ const {
 
 //get users Stats for the month compare to last month
 usersRouter.get("/api/users/stats", isAdmin, getUsersMonthlyStats);
+
 //get all users
 usersRouter.get("/api/users", isAdmin, getAllUsers);
 
