@@ -2,7 +2,7 @@ const Product = require("../models/product");
 const cloudinary = require("../utils/cloudinary");
 
 exports.CreateProduct = async (req, res) => {
-  const { name, brand, desc, price, image } = req.body;
+  const { name, brand, desc, category, price, image } = req.body;
   try {
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
@@ -12,6 +12,7 @@ exports.CreateProduct = async (req, res) => {
           name,
           brand,
           desc,
+          category,
           price,
           image: uploadResponse,
         });

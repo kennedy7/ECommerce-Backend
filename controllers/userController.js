@@ -72,7 +72,8 @@ exports.deleteUser = async (req, res) => {
     res.status(500).send(error);
   }
 };
-exports.getUsersMonthlyStats = async (req, res) => {
+//get monthly stats of users
+exports.getMonthlyUsersStats = async (req, res) => {
   const previousMonth = moment()
     .month(moment().month() - 1)
     .set("date", 1)
