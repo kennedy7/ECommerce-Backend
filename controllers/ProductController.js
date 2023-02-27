@@ -28,7 +28,7 @@ exports.CreateProduct = async (req, res) => {
 
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ _id: -1 });
     res.status(200).send(products);
   } catch (error) {
     res.status(500).send(error);
