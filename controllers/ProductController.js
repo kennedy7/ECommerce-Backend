@@ -28,12 +28,65 @@ exports.CreateProduct = async (req, res) => {
 
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ _id: -1 });
-    res.status(200).send(products);
+    const { pageNumber = 1, pageSize = 10, search = "" } = req.query;
+    let { sort = "desc", category = "All" } = req.query;
+
+    const categoryOptions = [
+      "Men",
+      "Women",
+      "Phones",
+      "Laptops",
+      "Bags",
+      "Kitchen",
+      "Snacks",
+      "Electronics",
+      "Furnitures",
+    ];
+    category === "All"
+      ? (category = [...categoryOptions])
+      : (category = req.query.category.split(","));
+    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+    const customLabels = {
+      totalDocs: "itemsCount",
+      docs: "products",
+      limit: "pageSize",
+      page: "pageNumber",
+      nextPage: "next",
+      prevPage: "prev",
+      totalPages: "pageCount",
+    };
+    const sortQuery = {
+      createdAt: sort === "desc" ? -1 : 1,
+    };
+    const options = {
+      page: parseInt(pageNumber, 10),
+      limit: parseInt(pageSize, 10),
+      sort: sortQuery,
+      customLabels,
+    };
+
+    const products = await Product.find({
+      name: { $regex: search, $options: "i" },
+    })
+      .where("category")
+      .in([...category])
+      .sort(sortQuery)
+      // .skip(pageNumber * pageSize)
+      .limit(pageSize);
+
+    const total = await Product.countDocuments({
+      category: { $in: [...category] },
+      name: { $regex: search, $options: "i" },
+    });
+    const data = { options, category: categoryOptions, products, total };
+    res.status(200).send(data);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
+
 exports.fetchProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
