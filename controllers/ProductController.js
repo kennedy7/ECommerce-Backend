@@ -79,7 +79,7 @@ exports.fetchAllProducts = async (req, res) => {
       category: { $in: [...category] },
       name: { $regex: search, $options: "i" },
     });
-    const data = { options, category: categoryOptions, products, total };
+    const data = { products, options, category: categoryOptions, total };
     res.status(200).send(data);
   } catch (error) {
     console.log(error);
