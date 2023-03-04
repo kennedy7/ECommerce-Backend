@@ -67,18 +67,7 @@ exports.fetchAllProducts = async (req, res) => {
     };
 
     const products = await Product.find();
-    // .where("category")
-    // .in([...category])
-    // .sort(sortQuery)
-    // // .skip(pageNumber * pageSize)
-    // .limit(pageSize);
 
-    // const total = await Product.countDocuments({
-    //   category: { $in: [...category] },
-    //   name: { $regex: search, $options: "i" },
-    // });
-    // const Moredata = { options, category: categoryOptions, total };
-    // res.status(200).send(Moredata);
     res.status(200).send(products);
   } catch (error) {
     console.log(error);
@@ -111,13 +100,17 @@ exports.SearchProduct = async (req, res) => {
 
     // const name = new RegExp(searchQuery, "i");
     const products = await await Product.find({
-      name: { $regex: searchQuery, $options: "i" },
-    })
-      .where("category")
-      .in([...category])
-      .sort(sortQuery)
-      // .skip(pageNumber * pageSize)
-      .limit(pageSize);
+      $or: [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { brand: { $regex: searchQuery, $options: "i" } },
+        { category: { $regex: searchQuery, $options: "i" } },
+      ],
+    });
+    // .where("category")
+    // .in([...category])
+    // .sort(sortQuery)
+    // // .skip(pageNumber * pageSize)
+    // .limit(pageSize);
 
     res.status(200).send(products);
   } catch (error) {

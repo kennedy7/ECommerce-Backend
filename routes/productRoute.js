@@ -20,7 +20,7 @@ ProductRouter.post(
 );
 
 ProductRouter.get("/api/products", fetchAllProducts);
-ProductRouter.get("/api/products/search", SearchProduct);
+ProductRouter.get("/api/products/search/:keyword", SearchProduct);
 ProductRouter.get("/api/products/find/:id", fetchProduct);
 ProductRouter.delete("/api/products/:id", isAdmin, DeleteProduct);
 ProductRouter.patch("/api/products/:id", isAdmin, UpdateProduct);
