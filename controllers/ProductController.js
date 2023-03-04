@@ -66,8 +66,52 @@ exports.fetchAllProducts = async (req, res) => {
       customLabels,
     };
 
-    const products = await Product.find({
-      name: { $regex: search, $options: "i" },
+    const products = await Product.find();
+    // .where("category")
+    // .in([...category])
+    // .sort(sortQuery)
+    // // .skip(pageNumber * pageSize)
+    // .limit(pageSize);
+
+    // const total = await Product.countDocuments({
+    //   category: { $in: [...category] },
+    //   name: { $regex: search, $options: "i" },
+    // });
+    // const Moredata = { options, category: categoryOptions, total };
+    // res.status(200).send(Moredata);
+    res.status(200).send(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+exports.SearchProduct = async (req, res) => {
+  try {
+    const { pageNumber = 1, pageSize = 10, searchQuery = "" } = req.query;
+    let { sort = "desc", category } = req.query;
+    const categoryOptions = [
+      "Men",
+      "Women",
+      "Phones",
+      "Laptops",
+      "Bags",
+      "Kitchen",
+      "Snacks",
+      "Electronics",
+      "Furnitures",
+    ];
+    category === "All"
+      ? (category = [...categoryOptions])
+      : (category = req.query.category.split(","));
+    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+    const sortQuery = {
+      createdAt: sort === "desc" ? -1 : 1,
+    };
+
+    // const name = new RegExp(searchQuery, "i");
+    const products = await await Product.find({
+      name: { $regex: searchQuery, $options: "i" },
     })
       .where("category")
       .in([...category])
@@ -75,14 +119,8 @@ exports.fetchAllProducts = async (req, res) => {
       // .skip(pageNumber * pageSize)
       .limit(pageSize);
 
-    const total = await Product.countDocuments({
-      category: { $in: [...category] },
-      name: { $regex: search, $options: "i" },
-    });
-    const data = { products, options, category: categoryOptions, total };
-    res.status(200).send(data);
+    res.status(200).send(products);
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 };
