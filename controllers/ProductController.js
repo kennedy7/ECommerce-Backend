@@ -76,45 +76,39 @@ exports.fetchAllProducts = async (req, res) => {
 };
 exports.SearchProduct = async (req, res) => {
   try {
-    const { pageNumber = 1, pageSize = 10, searchQuery = "" } = req.query;
-    let { sort = "desc", category } = req.query;
-    const categoryOptions = [
-      "Men",
-      "Women",
-      "Phones",
-      "Laptops",
-      "Bags",
-      "Kitchen",
-      "Snacks",
-      "Electronics",
-      "Furnitures",
-    ];
-    category === "All"
-      ? (category = [...categoryOptions])
-      : (category = req.query.category.split(","));
-    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+    const keyword = req.params.keyword;
+    // const categoryOptions = [
+    //   "Men",
+    //   "Women",
+    //   "Phones",
+    //   "Laptops",
+    //   "Bags",
+    //   "Kitchen",
+    //   "Snacks",
+    //   "Electronics",
+    //   "Furnitures",
+    // ];
+    // category === "All"
+    //   ? (category = [...categoryOptions])
+    //   : (category = req.query.category.split(","));
+    // req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
 
-    const sortQuery = {
-      createdAt: sort === "desc" ? -1 : 1,
-    };
+    // const sortQuery = {
+    //   createdAt: sort === "desc" ? -1 : 1,
+    // };
 
     // const name = new RegExp(searchQuery, "i");
-    const products = await await Product.find({
+    const results = await Product.find({
       $or: [
-        { name: { $regex: searchQuery, $options: "i" } },
-        { brand: { $regex: searchQuery, $options: "i" } },
-        { category: { $regex: searchQuery, $options: "i" } },
+        { name: { $regex: keyword, $options: "i" } },
+        { brand: { $regex: keyword, $options: "i" } },
+        { category: { $regex: keyword, $options: "i" } },
       ],
     });
-    // .where("category")
-    // .in([...category])
-    // .sort(sortQuery)
-    // // .skip(pageNumber * pageSize)
-    // .limit(pageSize);
-
-    res.status(200).send(products);
+    res.status(200).send(results);
   } catch (error) {
     res.status(500).send(error);
+    console.log(error);
   }
 };
 
