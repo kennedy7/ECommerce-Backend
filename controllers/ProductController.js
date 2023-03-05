@@ -28,52 +28,14 @@ exports.CreateProduct = async (req, res) => {
 
 exports.fetchAllProducts = async (req, res) => {
   try {
-    const { pageNumber = 1, pageSize = 10, search = "" } = req.query;
-    let { sort = "desc", category = "All" } = req.query;
-
-    const categoryOptions = [
-      "Men",
-      "Women",
-      "Phones",
-      "Laptops",
-      "Bags",
-      "Kitchen",
-      "Snacks",
-      "Electronics",
-      "Furnitures",
-    ];
-    category === "All"
-      ? (category = [...categoryOptions])
-      : (category = req.query.category.split(","));
-    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
-
-    const customLabels = {
-      totalDocs: "itemsCount",
-      docs: "products",
-      limit: "pageSize",
-      page: "pageNumber",
-      nextPage: "next",
-      prevPage: "prev",
-      totalPages: "pageCount",
-    };
-    const sortQuery = {
-      createdAt: sort === "desc" ? -1 : 1,
-    };
-    const options = {
-      page: parseInt(pageNumber, 10),
-      limit: parseInt(pageSize, 10),
-      sort: sortQuery,
-      customLabels,
-    };
-
-    const products = await Product.find();
-
+    const products = await Product.find().sort({ _id: -1 });
     res.status(200).send(products);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
   }
 };
+
 exports.SearchProduct = async (req, res) => {
   try {
     const keyword = req.params.keyword;
