@@ -103,6 +103,7 @@ exports.SearchProduct = async (req, res) => {
         { name: { $regex: keyword, $options: "i" } },
         { brand: { $regex: keyword, $options: "i" } },
         { category: { $regex: keyword, $options: "i" } },
+        { desc: { $regex: keyword, $options: "i" } },
       ],
     });
     res.status(200).send(results);
