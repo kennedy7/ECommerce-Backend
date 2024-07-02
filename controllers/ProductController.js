@@ -39,33 +39,14 @@ exports.fetchAllProducts = async (req, res) => {
 exports.SearchProduct = async (req, res) => {
   try {
     const keyword = req.params.keyword;
-    // const categoryOptions = [
-    //   "Men",
-    //   "Women",
-    //   "Phones",
-    //   "Laptops",
-    //   "Bags",
-    //   "Kitchen",
-    //   "Snacks",
-    //   "Electronics",
-    //   "Furnitures",
-    // ];
-    // category === "All"
-    //   ? (category = [...categoryOptions])
-    //   : (category = req.query.category.split(","));
-    // req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
-
-    // const sortQuery = {
-    //   createdAt: sort === "desc" ? -1 : 1,
-    // };
-
-    // const name = new RegExp(searchQuery, "i");
+    
     const results = await Product.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { brand: { $regex: keyword, $options: "i" } },
         { category: { $regex: keyword, $options: "i" } },
         { desc: { $regex: keyword, $options: "i" } },
+        { slug: { $regex: keyword, $options: "i" } },
       ],
     });
     res.status(200).send(results);
@@ -77,7 +58,7 @@ exports.SearchProduct = async (req, res) => {
 
 exports.fetchProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({ slug: req.params.slug });
     res.status(200).send(product);
   } catch (error) {
     res.status(500).send(error);
@@ -98,8 +79,8 @@ exports.UpdateProduct = async (req, res) => {
         );
         upload_preset: "online-Shop";
         if (uploadResponse) {
-          const updatedproduct = await Product.findByIdAndUpdate(
-            req.params.id,
+          const updatedproduct = await Product.findOneAndUpdate(
+            { slug: req.params.slug },
             {
               $set: {
                 ...req.body.product,
@@ -112,8 +93,8 @@ exports.UpdateProduct = async (req, res) => {
         }
       }
     } else {
-      const updatedproduct = await Product.findByIdAndUpdate(
-        req.params.id,
+      const updatedproduct = await Product.findOneAndUpdate(
+        { slug: req.params.slug },
         {
           $set: {
             ...req.body.product,
@@ -131,7 +112,7 @@ exports.UpdateProduct = async (req, res) => {
 //Delete product
 exports.DeleteProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({ slug: req.params.slug });
     if (!product) return res.status(404).send("Product not found!");
     if (product.image.public_id) {
       const destroyResponse = cloudinary.uploader.destroy(
