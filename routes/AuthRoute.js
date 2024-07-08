@@ -22,7 +22,7 @@ router.post(
 );
 
 router.post(
-  '/api/reset-password',
+  '/api/reset-password/:token',
   validatorMiddleware(AuthValidator.ResetPasswordSchema, 'body'),
   ResetPassword
 );
