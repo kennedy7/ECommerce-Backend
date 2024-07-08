@@ -27,6 +27,11 @@ const ProductSchema = new mongoose.Schema(
       type: Object,
       required: true,
     },
+    images: {
+      type: [Object],
+      required: true,
+      validate: [arrayLimit, '{PATH} exceeds the limit of 4']
+    },
     slug: {
       type: String,
       unique: true,
@@ -36,6 +41,9 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+function arrayLimit(val) {
+  return val.length <= 4;
+}
 productSchema.pre('save', function (next) {
   if (!this.isModified('name')) return next();
   this.slug = slugify(this.name, { lower: true, strict: true });

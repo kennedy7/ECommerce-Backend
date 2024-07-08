@@ -2,23 +2,25 @@ const Product = require("../models/product");
 const cloudinary = require("../utils/cloudinary");
 
 exports.CreateProduct = async (req, res) => {
-  const { name, brand, desc, category, price, image } = req.body;
+  const { name, brand, desc, category, price, images } = req.body;
   try {
-    if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      upload_preset: "online-Shop";
-      if (uploadResponse) {
-        const product = new Product({
-          name,
-          brand,
-          desc,
-          category,
-          price,
-          image: uploadResponse,
-        });
-        const savedProduct = await product.save();
-        res.status(200).send(savedProduct);
-      }
+    if (images && images.length <= 4) {
+      const uploadPromises = images.map(image => cloudinary.uploader.upload(image));
+      const uploadResponses = await Promise.all(uploadPromises);
+
+      const product = new Product({
+        name,
+        brand,
+        desc,
+        category,
+        price,
+        images: uploadResponses,
+      });
+
+      const savedProduct = await product.save();
+      res.status(200).send(savedProduct);
+    } else {
+      res.status(400).send("You can upload up to 4 images only.");
     }
   } catch (error) {
     console.log(error);
@@ -39,7 +41,7 @@ exports.fetchAllProducts = async (req, res) => {
 exports.SearchProduct = async (req, res) => {
   try {
     const keyword = req.params.keyword;
-    
+
     const results = await Product.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
@@ -51,8 +53,8 @@ exports.SearchProduct = async (req, res) => {
     });
     res.status(200).send(results);
   } catch (error) {
-    res.status(500).send(error);
     console.log(error);
+    res.status(500).send(error);
   }
 };
 
@@ -61,71 +63,66 @@ exports.fetchProduct = async (req, res) => {
     const product = await Product.findOne({ slug: req.params.slug });
     res.status(200).send(product);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
-
-//update product
 
 exports.UpdateProduct = async (req, res) => {
   try {
-    if (req.body.productImg) {
-      const destroyResponse = await cloudinary.uploader.destroy(
-        req.body.product.image.public_id
-      );
-      if (destroyResponse) {
-        const uploadResponse = await cloudinary.uploader.upload(
-          req.body.productImg
-        );
-        upload_preset: "online-Shop";
-        if (uploadResponse) {
-          const updatedproduct = await Product.findOneAndUpdate(
-            { slug: req.params.slug },
-            {
-              $set: {
-                ...req.body.product,
-                image: uploadResponse,
-              },
-            },
-            { new: true }
-          );
-          res.status(200).send(updatedproduct);
-        }
+    const { productImg } = req.body;
+
+    if (productImg && productImg.length <= 4) {
+      // If there are new images to upload
+      const product = await Product.findOne({ slug: req.params.slug });
+
+      if (product && product.images) {
+        // Destroy old images
+        const destroyPromises = product.images.map(image => cloudinary.uploader.destroy(image.public_id));
+        await Promise.all(destroyPromises);
       }
-    } else {
-      const updatedproduct = await Product.findOneAndUpdate(
+
+      // Upload new images
+      const uploadPromises = productImg.map(image => cloudinary.uploader.upload(image));
+      const uploadResponses = await Promise.all(uploadPromises);
+
+      const updatedProduct = await Product.findOneAndUpdate(
         { slug: req.params.slug },
-        {
-          $set: {
-            ...req.body.product,
-          },
-        },
+        { $set: { ...req.body, images: uploadResponses } },
         { new: true }
       );
-      res.status(200).send(updatedproduct);
+      res.status(200).send(updatedProduct);
+    } else if (!productImg) {
+      // If no new images, update other fields
+      const updatedProduct = await Product.findOneAndUpdate(
+        { slug: req.params.slug },
+        { $set: { ...req.body } },
+        { new: true }
+      );
+      res.status(200).send(updatedProduct);
+    } else {
+      res.status(400).send("You can upload up to 4 images only.");
     }
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
 
-//Delete product
 exports.DeleteProduct = async (req, res) => {
   try {
     const product = await Product.findOne({ slug: req.params.slug });
-    if (!product) return res.status(404).send("Product not found!");
-    if (product.image.public_id) {
-      const destroyResponse = cloudinary.uploader.destroy(
-        product.image.public_id
-      );
-      if (destroyResponse) {
-        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-        res.status(200).send(deletedProduct);
-      }
-    } else {
-      console.log("Action terminated, Failed to delete product image...");
+
+    if (product && product.images) {
+      // Delete images from Cloudinary if they exist
+      const destroyPromises = product.images.map(image => cloudinary.uploader.destroy(image.public_id));
+      await Promise.all(destroyPromises);
     }
+
+    const deletedProduct = await Product.findOneAndDelete({ slug: req.params.slug });
+    res.status(200).send(deletedProduct);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
