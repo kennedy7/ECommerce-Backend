@@ -14,7 +14,7 @@ const AuthValidator = {
     email: Joi.string().email().required()
   }),
   ResetPasswordSchema : Joi.object({
-    token: Joi.string().required(),
+    // token: Joi.string().required(),
     password: Joi.string().min(8).required(),
     confirmPassword: Joi.string().valid(Joi.ref('password')).required()
   })
