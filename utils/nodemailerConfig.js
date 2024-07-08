@@ -1,15 +1,14 @@
 const nodemailer = require('nodemailer');
-
 // Function to configure and return Nodemailer transporter instance
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'Gmail', // Update with your email service provider
+    service: 'Gmail', 
     auth: {
-      user: process.env.EMAIL, // Your email address
-      pass: process.env.PASSWORD // Your email password or app password for Gmail
+      user: process.env.EMAIL, 
+      pass: process.env.PASSWORD 
     }
   });
 };
 
-// Export the transporter instance
+
 module.exports = createTransporter();

@@ -6,7 +6,7 @@ const genAuthToken = require("../utils/genAuthToken");
 const { ResetPasswordSchema } = require("../validators/authValidators");
 const { transporter } = require("../utils/nodemailerConfig");
 
-//Register user controller
+// Register user controller
 exports.RegisterUser = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send(" User with this email exist... ");
@@ -24,7 +24,7 @@ exports.RegisterUser = async (req, res) => {
   res.send(token);
 };
 
-//login user controller
+// login user controller
 exports.LoginUser = async (req, res) => {
   const { email, password } = req.body;
   let user = await User.findOne({ email: email });
@@ -47,7 +47,7 @@ exports.ForgotPassword = async (req, res) => {
 
   await user.save();
 
-    // Send password reset email
+// Send password reset email
   const resetLink = `http://${req.headers.host}/reset-password/${token}`
   
   const mailOptions = {
