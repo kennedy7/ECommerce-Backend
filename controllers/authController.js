@@ -1,10 +1,9 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const genAuthToken = require("../utils/genAuthToken");
 const { ResetPasswordSchema } = require("../validators/authValidators");
-const { transporter } = require("../utils/nodemailerConfig");
+const  transporter  = require("../utils/nodemailerConfig");
 
 // Register user controller
 exports.RegisterUser = async (req, res) => {
@@ -67,7 +66,11 @@ exports.ForgotPassword = async (req, res) => {
   };
 
   transporter.sendMail(mailOptions, (err) => {
-    if (err) return res.status(500).send('Error sending email');
+    
+  if (err){ 
+    console.error('Error sending email:', err);
+    return res.status(500).send('Error sending email');
+  }
     res.status(200).send('Recovery email sent');
   });
 };

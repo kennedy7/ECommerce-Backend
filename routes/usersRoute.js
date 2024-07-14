@@ -23,4 +23,6 @@ usersRouter.patch("/api/users/:id", isUser, updateUser);
 //delete a user by id
 usersRouter.delete("/api/users/:id", isAdmin, deleteUser);
 
+usersRouter.get("/api/user", (req, res)=>{ res.send('server up and running. Weldone mate!')});
+
 module.exports = usersRouter;

@@ -44,7 +44,7 @@ const ProductSchema = new mongoose.Schema(
 function arrayLimit(val) {
   return val.length <= 4;
 }
-productSchema.pre('save', function (next) {
+ProductSchema.pre('save', function (next) {
   if (!this.isModified('name')) return next();
   this.slug = slugify(this.name, { lower: true, strict: true });
   next();
