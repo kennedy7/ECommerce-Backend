@@ -24,10 +24,6 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    image: {
-      type: Object,
-      required: true,
-    },
     images: {
       type: [Object],
       required: true,
