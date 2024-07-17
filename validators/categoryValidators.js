@@ -7,7 +7,7 @@ const categoryValidator = {
 }),
 updateCategorySchema: Joi.object({
   name: Joi.string().required(),
-  image: Joi.string().optional(),
+  image: Joi.string().required(),
 })
 }
 
