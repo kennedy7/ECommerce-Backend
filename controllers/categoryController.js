@@ -30,10 +30,16 @@ exports.fetchAllCategories = async (req, res) => {
 exports.fetchCategory = async (req, res) => {
   try {
     const category = await Category.findOne({ slug: req.params.slug });
-    res.status(200).send(category);
+    if (!category) {
+      return res.status(404).send({ error: "Category not found" });
+    }
+    
+    const products = await Product.find({ category: category.slug });
+
+    res.status(200).send({ category, products });
   } catch (error) {
     console.log(error);
-    res.status(500).send(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
 
@@ -62,15 +68,16 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
-    const category = await Category.findOne({ slug: req.params.slug });
-    if (category.image) {
-      // Delete image from Cloudinary if it exists
-      await cloudinary.uploader.destroy(category.image);
-    }
-    const deletedCategory = await Category.findOneAndDelete({ slug: req.params.slug });
-    res.status(200).send(deletedCategory);
+    const category = await Category.findOneAndDelete({ slug: req.params.slug });
+    if (!category) {
+      return res.status(404).send({ error: "Category not found" });
+    } 
+    // Optionally, we can still delete associated products
+    // await Product.deleteMany({ category: category._id });
+
+    res.status(200).send({ message: "Category deleted successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).send(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };

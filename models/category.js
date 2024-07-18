@@ -7,24 +7,27 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true
     },
     slug: {
       type: String,
-      unique: true,
+      required: true,
+      unique: true
     },
     image: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   { timestamps: true }
 );
 
-categorySchema.pre('save', function(next) {
-  this.slug = slugify(this.name, { lower: true });
+// Pre-save middleware to generate slug from name
+categorySchema.pre("save", function(next) {
+  if (this.isModified("name")) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
   next();
 });
 
-const Category = mongoose.model("Category", categorySchema);
-
-module.exports = Category;
+module.exports = mongoose.model("Category", categorySchema);
