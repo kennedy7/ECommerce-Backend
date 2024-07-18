@@ -1,9 +1,18 @@
 const Product = require("../models/product");
 const cloudinary = require("../utils/cloudinary");
 
+   
+
 exports.CreateProduct = async (req, res) => {
   const { name, brand, desc, category, price, images } = req.body;
+
   try {
+    // Check if category exists
+    const categoryExists = await Category.findOne({ slug: category });
+    if (!categoryExists) {
+      return res.status(400).send("Category does not exist.");
+    }
+
     if (images && images.length <= 4) {
       const uploadPromises = images.map(image => cloudinary.uploader.upload(image));
       const uploadResponses = await Promise.all(uploadPromises);
@@ -12,9 +21,9 @@ exports.CreateProduct = async (req, res) => {
         name,
         brand,
         desc,
-        category,
+        category: categoryExists.slug, 
         price,
-        images: uploadResponses,
+        images: uploadResponses.map(response => response.url),
       });
 
       const savedProduct = await product.save();
@@ -24,7 +33,7 @@ exports.CreateProduct = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
 
