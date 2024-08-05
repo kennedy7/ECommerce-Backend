@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const router = require("./routes/AuthRoute");
 const ProductRouter = require("./routes/productRoute");
+const CategoryRouter = require("./routes/categoryRoute");
 const StripeRouter = require("./routes/stripe");
 const usersRouter = require("./routes/usersRoute");
 const ordersStatsRouter = require("./routes/ordersRoute");
@@ -15,6 +16,7 @@ app.use(cors());
 //Routes
 app.use(router);
 app.use(ProductRouter);
+app.use(CategoryRouter);
 app.use(StripeRouter);
 app.use(usersRouter);
 app.use(ordersStatsRouter);
