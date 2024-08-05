@@ -1,3 +1,4 @@
+const { default: slugify } = require("slugify");
 const Category = require("../models/category");
 const cloudinary = require("../utils/cloudinary");
 
@@ -7,8 +8,11 @@ exports.createCategory = async (req, res) => {
     const { name, image } = req.body;
    
     const uploadResponse = await cloudinary.uploader.upload(image);
+    
+    const slug = slugify(name, { lower: true });
     const category = new Category({
       name,
+      slug,
       image: uploadResponse.secure_url,
     });
     const savedCategory = await category.save();
