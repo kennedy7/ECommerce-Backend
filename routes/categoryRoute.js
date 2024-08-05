@@ -2,24 +2,24 @@ const express = require("express");
 const { createCategory, fetchAllCategories, fetchCategory, updateCategory, deleteCategory } = require("../controllers/categoryController");
 const validatorMiddleware = require("../middlewares/validatorMiddleware");
 const CategoryValidator = require("../validators/categoryValidators");
-const router = express.Router();
+const CategoryRouter = express.Router();
 
-router.post(
-  "/api/categories",
+CategoryRouter.post(
+  "/api/category",
   validatorMiddleware(CategoryValidator.createCategorySchema, "body"),
   createCategory
 );
 
-router.get("/api/categories", fetchAllCategories);
+CategoryRouter.get("/api/categories", fetchAllCategories);
 
-router.get("/api/categories/:slug", fetchCategory);
+CategoryRouter.get("/api/categories/:slug", fetchCategory);
 
-router.put(
+CategoryRouter.put(
   "/api/categories/:slug",
   validatorMiddleware(CategoryValidator.updateCategorySchema, "body"),
   updateCategory
 );
 
-router.delete("/api/categories/:slug", deleteCategory);
+CategoryRouter.delete("/api/categories/:slug", deleteCategory);
 
-module.exports = router;
+module.exports = CategoryRouter;

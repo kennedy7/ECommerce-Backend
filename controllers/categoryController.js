@@ -2,8 +2,10 @@ const Category = require("../models/category");
 const cloudinary = require("../utils/cloudinary");
 
 exports.createCategory = async (req, res) => {
-  const { name, image } = req.body;
+  
   try {
+    const { name, image } = req.body;
+   
     const uploadResponse = await cloudinary.uploader.upload(image);
     const category = new Category({
       name,
