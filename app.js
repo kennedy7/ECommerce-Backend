@@ -12,7 +12,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use(cors());
+
+const corsOptions = {
+  origin: '*', 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+  exposedHeaders: 'Content-Length,X-Content-Type-Options', 
+  credentials: true,
+  preflightContinue: false, 
+  optionsSuccessStatus: 204 
+};
+
+app.use(cors(corsOptions));
+
 //Routes
 app.use(router);
 app.use(ProductRouter);

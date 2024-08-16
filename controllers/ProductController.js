@@ -1,10 +1,11 @@
 const Product = require("../models/product");
 const cloudinary = require("../utils/cloudinary");
-
+const { default: slugify } = require("slugify");
    
 
 exports.CreateProduct = async (req, res) => {
-  const { name, brand, desc, category, price, images } = req.body;
+
+  const { name, brand, desc, category, quantity, price, images } = req.body;
 
   try {
     // Check if category exists
@@ -17,14 +18,19 @@ exports.CreateProduct = async (req, res) => {
       const uploadPromises = images.map(image => cloudinary.uploader.upload(image));
       const uploadResponses = await Promise.all(uploadPromises);
 
+      const slug = slugify(name, { lower: true });
       const product = new Product({
         name,
+        slug,
         brand,
         desc,
         category: categoryExists.slug, 
+        quantity,
         price,
         images: uploadResponses.map(response => response.url),
+       
       });
+
 
       const savedProduct = await product.save();
       res.status(200).send(savedProduct);
@@ -44,6 +50,21 @@ exports.fetchAllProducts = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
+  }
+};
+
+exports.fetchAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find()
+      .populate({
+        path: 'category',
+        select: 'name slug image',  // Select only the fields you want from the Category model
+      })
+      .sort({ _id: -1 });
+    res.status(200).send(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
 
@@ -67,15 +88,24 @@ exports.SearchProduct = async (req, res) => {
   }
 };
 
+
+
 exports.fetchProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug });
+    const product = await Product.findOne({ slug: req.params.slug })
+      .populate({ path: 'category' }); 
+
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
     res.status(200).send(product);
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    console.error(error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
+
 
 exports.UpdateProduct = async (req, res) => {
   try {
