@@ -25,6 +25,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
 //Routes
 app.use(router);
 app.use(ProductRouter);

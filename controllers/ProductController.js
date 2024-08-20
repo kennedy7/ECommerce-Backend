@@ -1,11 +1,12 @@
 const Product = require("../models/product");
+const Category = require("../models/category");
 const cloudinary = require("../utils/cloudinary");
 const { default: slugify } = require("slugify");
    
 
 exports.CreateProduct = async (req, res) => {
 
-  const { name, brand, desc, category, quantity, price, images } = req.body;
+  const { name, desc, category, quantity, price, images } = req.body;
 
   try {
     // Check if category exists
@@ -22,9 +23,8 @@ exports.CreateProduct = async (req, res) => {
       const product = new Product({
         name,
         slug,
-        brand,
         desc,
-        category: categoryExists.slug, 
+        category: categoryExists._id, 
         quantity,
         price,
         images: uploadResponses.map(response => response.url),
@@ -75,7 +75,6 @@ exports.SearchProduct = async (req, res) => {
     const results = await Product.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
-        { brand: { $regex: keyword, $options: "i" } },
         { category: { $regex: keyword, $options: "i" } },
         { desc: { $regex: keyword, $options: "i" } },
         { slug: { $regex: keyword, $options: "i" } },
@@ -106,10 +105,26 @@ exports.fetchProduct = async (req, res) => {
   }
 };
 
-
 exports.UpdateProduct = async (req, res) => {
   try {
-    const { productImg } = req.body;
+    const { productImg, category } = req.body;
+
+    // Find category ID if a category slug is provided
+    let categoryId = null;
+    if (category) {
+      const categoryDoc = await Category.findOne({ slug: category });
+      if (categoryDoc) {
+        categoryId = categoryDoc._id;
+      } else {
+        return res.status(400).send("Category not found.");
+      }
+    }
+
+    // Prepare the updated product body
+    const updatedBody = {
+      ...req.body,
+      category: categoryId, // Use the category ID instead of the slug
+    };
 
     if (productImg && productImg.length <= 4) {
       // If there are new images to upload
@@ -125,9 +140,10 @@ exports.UpdateProduct = async (req, res) => {
       const uploadPromises = productImg.map(image => cloudinary.uploader.upload(image));
       const uploadResponses = await Promise.all(uploadPromises);
 
+      // Update the product with new images and category ID
       const updatedProduct = await Product.findOneAndUpdate(
         { slug: req.params.slug },
-        { $set: { ...req.body, images: uploadResponses } },
+        { $set: { ...updatedBody, images: uploadResponses } },
         { new: true }
       );
       res.status(200).send(updatedProduct);
@@ -135,7 +151,7 @@ exports.UpdateProduct = async (req, res) => {
       // If no new images, update other fields
       const updatedProduct = await Product.findOneAndUpdate(
         { slug: req.params.slug },
-        { $set: { ...req.body } },
+        { $set: { ...updatedBody } },
         { new: true }
       );
       res.status(200).send(updatedProduct);
@@ -148,20 +164,38 @@ exports.UpdateProduct = async (req, res) => {
   }
 };
 
+
 exports.DeleteProduct = async (req, res) => {
   try {
+    // Find the product by slug
     const product = await Product.findOne({ slug: req.params.slug });
 
-    if (product && product.images) {
-      // Delete images from Cloudinary if they exist
-      const destroyPromises = product.images.map(image => cloudinary.uploader.destroy(image.public_id));
+    if (!product) {
+      return res.status(404).send({ message: 'Product not found' });
+    }
+
+    // Delete images from Cloudinary if they exist
+    if (product.images && product.images.length > 0) {
+      const destroyPromises = product.images.map(image => {
+        if (image.public_id) {
+          return cloudinary.uploader.destroy(image.public_id);
+        } else {
+          console.warn('Image does not have a public_id:', image);
+          return Promise.resolve(); // Skip image without public_id
+        }
+      });
       await Promise.all(destroyPromises);
     }
 
+    // Delete the product
     const deletedProduct = await Product.findOneAndDelete({ slug: req.params.slug });
+
+    // Return the deleted product
     res.status(200).send(deletedProduct);
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    console.error('Error deleting product:', error);
+    res.status(500).send({ message: 'Internal Server Error', error });
   }
 };
+
+

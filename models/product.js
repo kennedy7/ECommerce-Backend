@@ -7,10 +7,7 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    brand: {
-      type: String,
-      required: true,
-    },
+   
     desc: {
       type: String,
       required: true,
@@ -21,6 +18,10 @@ const ProductSchema = new mongoose.Schema(
       required: true 
     },
     price: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
       type: Number,
       required: true,
     },
