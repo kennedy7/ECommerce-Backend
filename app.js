@@ -8,6 +8,7 @@ const CategoryRouter = require("./routes/categoryRoute");
 const StripeRouter = require("./routes/stripe");
 const usersRouter = require("./routes/usersRoute");
 const ordersStatsRouter = require("./routes/ordersRoute");
+const contactRouter = require("./routes/contactRouter");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -28,6 +29,7 @@ app.use(cors(corsOptions));
 
 //Routes
 app.use(router);
+app.use(contactRouter);
 app.use(ProductRouter);
 app.use(CategoryRouter);
 app.use(StripeRouter);
