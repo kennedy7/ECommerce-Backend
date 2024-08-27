@@ -28,12 +28,16 @@ exports.contact = async (req, res) => {
         from: email,
         to: process.env.EMAIL,
         subject: `Customer - Powermart Website`,
-      html: `
-        <h2>Customer Contact</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Message:</strong> ${message}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Phone:</strong> <a href="tel:${phoneNumber}">${phoneNumber}</a></p>
+        html: `
+        <div style="background-color: #e8f5e9; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #2e7d32;">Customer Contact</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Message:</strong> ${message}</p>
+            <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #2e7d32;">${email}</a></p>
+            <p><strong>Phone:</strong> <a href="tel:${phoneNumber}" style="color: #2e7d32;">${phoneNumber}</a></p>
+          </div>
+        </div>
       `,
       };
   
