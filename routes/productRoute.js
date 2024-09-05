@@ -22,6 +22,7 @@ ProductRouter.post(
 ProductRouter.get("/api/products", fetchAllProducts);
 ProductRouter.get("/api/products/search/:keyword", SearchProduct);
 ProductRouter.get("/api/products/find/:slug", fetchProduct);
+
 ProductRouter.delete("/api/products/:slug",
   //  isAdmin,
     DeleteProduct);

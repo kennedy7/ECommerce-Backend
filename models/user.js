@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    phoneNumber: { 
+      type: String, 
+      trim: true 
+    }, // Added phone number field
+  address: { 
+    type: String, 
+    trim: true 
+  }, 
     resetPasswordToken: {
       type: String,
     },

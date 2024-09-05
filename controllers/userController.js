@@ -28,34 +28,39 @@ exports.getUser = async (req, res) => {
 
 //update user
 exports.updateUser = async (req, res) => {
-  const { name, email, isAdmin, password } = req.body;
+  const { name, phoneNumber, address, password, isAdmin } = req.body;
   try {
     const user = await User.findById(req.params.id);
-    //email change check
-    if (!(user.email === email)) {
-      const emailInUse = await User.findOne({ email: email });
-      if (emailInUse) return res.status(400).send("email is already in use");
+    
+    if (!user) {
+      return res.status(404).send("User not found");
     }
 
+    // Check and update password if provided
     if (password && user) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       user.password = hashedPassword;
     }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
-        name: name,
-        email: email,
-        isAdmin: isAdmin,
-        password: user.password,
+        name: name || user.name,  
+        phoneNumber: phoneNumber || user.phoneNumber, 
+        address: address || user.address, 
+        isAdmin: isAdmin !== undefined ? isAdmin : user.isAdmin,  
+        password: user.password,  
       },
       { new: true }
     );
+
     res.status(200).send({
       _id: updatedUser._id,
       name: updatedUser.name,
-      email: updatedUser.email,
+      email: updatedUser.email,  // Email remains unchanged
+      phoneNumber: updatedUser.phoneNumber,
+      address: updatedUser.address,
       isAdmin: updatedUser.isAdmin,
     });
   } catch (error) {
