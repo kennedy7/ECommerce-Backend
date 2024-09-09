@@ -22,6 +22,7 @@
     "mongoose": "^6.8.2",
     "nodemailer": "^6.9.14",
     "nodemon": "^2.0.20",
+    "paystack-api": "^2.0.6",
     "slugify": "^1.6.6",
     "stripe": "^11.6.0"
   }
