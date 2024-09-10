@@ -6,6 +6,7 @@ const {
   deleteUser,
   getUser,
   updateUser,
+  updatePassword,
 } = require("../controllers/userController");
 
 //get users Stats for the month compare to last month
@@ -19,6 +20,10 @@ usersRouter.get("/api/users/find/:id", isUser, getUser);
 
 //updateUser
 usersRouter.patch("/api/users/:id", isUser, updateUser);
+
+//updateUserPassword
+usersRouter.put('/api/users/:id/password', updatePassword);
+
 
 //delete a user by id
 usersRouter.delete("/api/users/:id", isAdmin, deleteUser);
