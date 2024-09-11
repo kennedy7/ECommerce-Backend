@@ -169,3 +169,22 @@ exports.getOrder = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
+// Get User Orders
+exports.getUserOrders = async (req, res) => {
+  try {
+    // Find all orders that belong to the currently logged-in user
+    const orders = await Order.find({ userId: req.user._id });
+
+    // If no orders are found
+    if (!orders || orders.length === 0) {
+      return res.status(404).send("No orders found for this user.");
+    }
+
+    // Return the user's orders
+    res.status(200).send(orders);
+  } catch (err) {
+    res.status(500).send("Something went wrong. Please try again.");
+  }
+};
+

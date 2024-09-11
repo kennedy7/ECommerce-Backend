@@ -22,7 +22,7 @@ usersRouter.get("/api/users/find/:id", isUser, getUser);
 usersRouter.patch("/api/users/:id", isUser, updateUser);
 
 //updateUserPassword
-usersRouter.patch('/api/users/:id/password', updatePassword);
+usersRouter.patch('/api/users/:id/password', isUser, updatePassword);
 
 
 //delete a user by id
