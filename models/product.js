@@ -7,7 +7,15 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-   
+    slug: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    brand: {
+      type: String,
+      required: true,
+    },
     desc: {
       type: String,
       required: true,
@@ -17,11 +25,12 @@ const ProductSchema = new mongoose.Schema(
       ref: "Category", 
       required: true 
     },
-    price: {
+    quantity: {
       type: Number,
       required: true,
+      min: 0, 
     },
-    quantity: {
+    price: {
       type: Number,
       required: true,
     },
@@ -30,10 +39,11 @@ const ProductSchema = new mongoose.Schema(
       required: true,
       validate: [arrayLimit, '{PATH} exceeds the limit of 4']
     },
-    slug: {
+   
+    status: {
       type: String,
-      unique: true,
-      required: true,
+      enum: ['in stock', 'out of stock'],
+      default: 'in stock',
     },
   },
   { timestamps: true }
