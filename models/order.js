@@ -42,11 +42,10 @@ const orderSchema = new mongoose.Schema({
   products: {
     type: Array,
     required: true,
-    // Assuming an array of product objects, further product schema definition might be needed
   },
   amount: {
     type: Number,
-    required: true, // Amount in kobo (smallest currency unit)
+    required: true, 
   },
   address: {
     type: String,
@@ -67,14 +66,6 @@ const orderSchema = new mongoose.Schema({
     default: {},
     // Store additional metadata from Paystack
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);
