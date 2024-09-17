@@ -30,26 +30,26 @@
 // PaystackRouter.post('/paystack/webhook', (req, res) => {
 //     const secret = PAYSTACK_SECRET_KEY;
 //     const hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
-  
+
 //     if (hash === req.headers['x-paystack-signature']) {
 //       // Process the event here
 //       const event = req.body;
 //       console.log('Payment successful:', event);
 //     }
-  
+
 //     res.status(200).send();
 //   });
 
 // PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
 //     const reference = req.params.reference;
-  
+
 //     try {
 //       const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
 //         headers: {
 //           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
 //         },
 //       });
-  
+
 //       const transaction = response.data.data;
 //       if (transaction.status === 'success') {
 //         res.status(200).json({ message: 'Payment verified', transaction });
@@ -61,15 +61,8 @@
 //       res.status(500).json({ message: 'Payment verification failed' });
 //     }
 //   });
-    
 
 // module.exports = PaystackRouter;
-
-
-
-
-
-
 
 // async createPaymentIntent(body: any, res: any) {
 //   const { amount, email, metadata } = body;
@@ -166,9 +159,9 @@
 //             professionalSummary: metadata.professionalSummary,
 //             education: metadata.education,
 //             skills: metadata.skills,
-//             packageTitle: metadata.packageTitle, 
+//             packageTitle: metadata.packageTitle,
 //             packagePrice: metadata.packagePrice,
-//             vendorId: metadata.vendorId, 
+//             vendorId: metadata.vendorId,
 //             paidAt,
 //           };
 
@@ -189,14 +182,11 @@
 //             });
 //           }
 
-
 //           const user = await this.userModel.findById(metadata.userId);
 //           if (!user) throw new NotFoundException('User not found')
 
 //           const vendor = await this.userModel.findById(metadata.vendorId);
 //           if (!user) throw new NotFoundException('User not found')
-
-
 
 //           successfulPayment(responseData.data.customer.email, vendor.role, totalPrice, user.name);
 //           newOrder(vendor.email, vendor.role, vendor.name)
@@ -228,7 +218,6 @@
 
 //   reqPaystack.end();
 // }
-
 
 // router.post("/payment", function (req, res) {
 //   const { amount, email, metadata } = req.body;
@@ -384,7 +373,6 @@
 //             );
 //           });
 
-
 //           // productOrderMail({name: paymentData.name, email: paymentData.email, product: metadata.cart.name, quantity: metadata.cart.quantity,
 //           // image:metadata.cart.image, price: paymentData.totalPrice, address: paymentData.address, transactionId: paymentData.transactionId })
 
@@ -431,7 +419,6 @@
 //   reqPaystack.end();
 // });
 
-
 const express = require("express");
 const PaystackRouter = express.Router();
 require("dotenv").config();
@@ -443,13 +430,13 @@ const Order = require("../models/order");
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 // Initialize Paystack transaction and create an order
-PaystackRouter.post('/paystack/pay', async (req, res) => {
+PaystackRouter.post("/api/paystack/pay", async (req, res) => {
   const { email, amount, address, userId, products } = req.body;
 
   try {
     // Step 1: Initialize Paystack transaction
     const response = await axios.post(
-      'https://api.paystack.co/transaction/initialize',
+      "https://api.paystack.co/transaction/initialize",
       {
         email,
         amount: amount * 100, // Paystack requires amount in kobo
@@ -458,6 +445,8 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
           address,
           products,
         },
+        callback_url: "http://localhost:5173" 
+        // callback_url: "https://powermartelectricals.com" 
       },
       {
         headers: {
@@ -475,8 +464,8 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
       products,
       amount,
       address,
-      paymentStatus: 'pending', // Initial payment status
-      deliveryStatus: 'pending', // Initial delivery status
+      paymentStatus: "pending", // Initial payment status
+      deliveryStatus: "pending", // Initial delivery status
     });
 
     await newOrder.save();
@@ -484,50 +473,54 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
     // Step 3: Send the Paystack payment link to the frontend
     res.status(200).json({ authorization_url, reference });
   } catch (error) {
-    console.error('Error initializing payment:', error);
-    res.status(500).json({ message: 'Payment initialization failed' });
+    console.error("Error initializing payment:", error);
+    res.status(500).json({ message: "Payment initialization failed" });
   }
 });
 
 // Handle Paystack webhook
-PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const secret = PAYSTACK_SECRET_KEY;
-  const hash = crypto
-    .createHmac('sha512', secret)
-    .update(JSON.stringify(req.body))
-    .digest('hex');
+PaystackRouter.post(
+  "/api/paystack/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const secret = PAYSTACK_SECRET_KEY;
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
 
-  if (hash === req.headers['x-paystack-signature']) {
-    const event = req.body;
-    const data = event.data;
+    if (hash === req.headers["x-paystack-signature"]) {
+      const event = req.body;
+      const data = event.data;
 
-    try {
-      if (event.event === 'charge.success') {
-        // Find the order using the Paystack reference
-        const order = await Order.findOne({ reference: data.reference });
+      try {
+        if (event.event === "charge.success") {
+          // Find the order using the Paystack reference
+          const order = await Order.findOne({ reference: data.reference });
 
-        if (order) {
-          // Update order with successful payment information
-          order.paymentStatus = 'paid';
-          order.deliveryStatus = 'pending'; // Adjust as needed based on your process
-          order.metadata = { ...order.metadata, ...data.metadata };
+          if (order) {
+            // Update order with successful payment information
+            order.paymentStatus = "paid";
+            order.deliveryStatus = "pending"; // Adjust as needed based on your process
+            order.metadata = { ...order.metadata, ...data.metadata };
 
-          await order.save();
-          console.log('Payment successful:', event);
+            await order.save();
+            console.log("Payment successful:", event);
+          }
         }
+      } catch (err) {
+        console.error("Order update failed:", err);
       }
-    } catch (err) {
-      console.error('Order update failed:', err);
+    } else {
+      res.status(400).send("Invalid signature");
     }
-  } else {
-    res.status(400).send('Invalid signature');
-  }
 
-  res.status(200).send();
-});
+    res.status(200).send();
+  }
+);
 
 // Verify Paystack transaction
-PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
+PaystackRouter.get("/api/paystack/verify/:reference", async (req, res) => {
   const reference = req.params.reference;
 
   try {
@@ -543,24 +536,24 @@ PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
 
     const transaction = response.data.data;
 
-    if (transaction.status === 'success') {
+    if (transaction.status === "success") {
       // Step 2: Update the order status in the database
       const order = await Order.findOne({ reference });
 
       if (order) {
-        order.paymentStatus = 'paid';
-        order.deliveryStatus = 'pending'; // Adjust as needed
+        order.paymentStatus = "paid";
+        order.deliveryStatus = "pending"; // Adjust as needed
         order.metadata = { ...order.metadata, ...transaction.metadata };
 
         await order.save();
-        return res.status(200).json({ message: 'Payment verified', order });
+        return res.status(200).json({ message: "Payment verified", order });
       }
     } else {
-      return res.status(400).json({ message: 'Payment verification failed' });
+      return res.status(400).json({ message: "Payment verification failed" });
     }
   } catch (error) {
-    console.error('Payment verification error:', error);
-    res.status(500).json({ message: 'Payment verification failed' });
+    console.error("Payment verification error:", error);
+    res.status(500).json({ message: "Payment verification failed" });
   }
 });
 

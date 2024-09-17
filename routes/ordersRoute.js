@@ -27,7 +27,7 @@ ordersStatsRouter.get("/api/orders/week-sales", isAdmin, getOneWeekSales);
 //GET ORDERS/ RECENT TRANSACTIONs
 ordersStatsRouter.get("/api/orders/", isAdmin, getRecentOrders);
 // get the logged-in user's orders
-ordersStatsRouter.get('/my-orders/:id', isUser, getUserOrders);
+ordersStatsRouter.get('/api/my-orders/:id', isUser, getUserOrders);
 //update An Order
 ordersStatsRouter.patch("/api/orders/:id", isAdmin, UpdateOrder);
 //Get An Order
