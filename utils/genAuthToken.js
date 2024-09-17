@@ -9,6 +9,8 @@ const genAuthToken = (user) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      phoneNumber: user.phoneNumber,
+      address: user.address
     },
     secretKey
   );
