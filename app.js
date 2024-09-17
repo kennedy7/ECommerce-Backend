@@ -19,6 +19,7 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 const corsOptions = {
   origin: '*', 
+  // origin: 'https://www.powermartelectricals.com',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
   exposedHeaders: 'Content-Length,X-Content-Type-Options', 
