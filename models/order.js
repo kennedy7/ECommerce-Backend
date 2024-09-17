@@ -27,6 +27,7 @@ const mongoose = require('mongoose');
 // Define enums for payment status and delivery status
 const paymentStatusEnum = ['pending', 'paid', 'failed'];
 const deliveryStatusEnum = ['pending', 'shipped', 'delivered'];
+const statusEnum = ['pending', 'completed', 'cancelled'];
 
 const orderSchema = new mongoose.Schema({
   userId: {
@@ -50,6 +51,12 @@ const orderSchema = new mongoose.Schema({
   address: {
     type: String,
     required: true,
+  },
+  //order status
+  status: { 
+    type: String, 
+    enum: statusEnum, 
+    default: 'pending' 
   },
   paymentStatus: {
     type: String,
