@@ -14,21 +14,21 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use(express.json({ limit: '100mb' }));  
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 const corsOptions = {
-  origin: '*', 
-  // origin: 'https://www.powermartelectricals.com',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
-  exposedHeaders: 'Content-Length,X-Content-Type-Options', 
+  origin: '*',  // Allow all origins, but for security, specify your frontend domain in production
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',  // Add OPTIONS to the allowed methods
+  allowedHeaders: 'Content-Type,Authorization,X-Requested-With,Accept,x-auth-token', // Ensure all necessary headers are allowed
+  exposedHeaders: 'Content-Length,X-Content-Type-Options',
   credentials: true,
-  preflightContinue: false, 
-  optionsSuccessStatus: 204 
+  preflightContinue: false,  // Ensure the server sends an automatic response to preflight requests
+  optionsSuccessStatus: 204  // Send 204 status for successful OPTIONS preflight requests
 };
 
 app.use(cors(corsOptions));
+
 
 
 //Routes
@@ -39,7 +39,7 @@ app.use(CategoryRouter);
 app.use(StripeRouter);
 app.use(usersRouter);
 app.use(ordersStatsRouter);
-app.use(PaystackRouter)
+app.use(PaystackRouter);
 
 app.listen(PORT, () => {
   console.log(`Ecommerce Backend Server running on port ${PORT} `);
