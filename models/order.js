@@ -26,7 +26,7 @@ const mongoose = require('mongoose');
 
 // Define enums for payment status and delivery status
 const paymentStatusEnum = ['pending', 'paid', 'failed'];
-const deliveryStatusEnum = ['pending', 'shipped', 'delivered'];
+const deliveryStatusEnum = ['pending', 'dispatched', 'delivered'];
 const statusEnum = ['pending', 'completed', 'cancelled'];
 
 const orderSchema = new mongoose.Schema({
