@@ -1,5 +1,6 @@
 const express = require("express");
 const PaystackRouter = express.Router();
+const User = require("../models/user");
 require("dotenv").config();
 const axios = require("axios");
 const crypto = require("crypto");
@@ -76,14 +77,14 @@ PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' 
         if (order) {
           // Update order with successful payment information
           order.paymentStatus = 'paid';
-          order.deliveryStatus = 'pending'; // Adjust as needed based on your process
+          order.deliveryStatus = 'pending'; 
           order.metadata = { ...order.metadata, ...data.metadata };
 
           await order.save();
       // Send confirmation email after successful payment
           await sendOrderConfirmationEmail(order.userId, order);
 
-          console.log('ayment successful and email sent:', event);
+          console.log('Payment successful and email sent:', event);
         }
       }
     } catch (err) {
@@ -92,7 +93,6 @@ PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' 
   } else {
     res.status(400).send('Invalid signature');
   }
-
   res.status(200).send();
 });
 
