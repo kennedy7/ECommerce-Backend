@@ -46,6 +46,8 @@ exports.updateUser = async (req, res) => {
       },
       { new: true }
     );
+     // Use the genAuthToken function to generate the new token
+     const token = genAuthToken(updatedUser);
 
     res.status(200).send({
       _id: updatedUser._id,
@@ -54,6 +56,7 @@ exports.updateUser = async (req, res) => {
       phoneNumber: updatedUser.phoneNumber,
       address: updatedUser.address,
       isAdmin: updatedUser.isAdmin,
+      token
     });
   } catch (error) {
     res.status(500).send(error);

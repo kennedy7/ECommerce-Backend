@@ -9,6 +9,7 @@ const {
   UpdateOrder,
   getOrder,
   getUserOrders,
+  deleteOrder,
 } = require("../controllers/OrderController");
 
 //GET MONTHLY ORDERS STATS
@@ -32,5 +33,7 @@ ordersStatsRouter.get('/api/my-orders/:id', isUser, getUserOrders);
 ordersStatsRouter.patch("/api/orders/:id", isAdmin, UpdateOrder);
 //Get An Order
 ordersStatsRouter.get("/api/orders/findOne/:id", auth, getOrder);
+//delete an order
+ordersStatsRouter.delete("/api/orders/:id", isAdmin, deleteOrder);
 
 module.exports = ordersStatsRouter;

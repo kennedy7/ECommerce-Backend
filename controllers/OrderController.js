@@ -188,3 +188,17 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
+// Delete Order
+exports.deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    await order.remove();
+    res.status(200).send({ message: "Order deleted successfully" });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
