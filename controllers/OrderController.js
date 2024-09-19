@@ -141,21 +141,35 @@ exports.getRecentOrders = async (req, res) => {
   }
 };
 
-//Update Order
+// Update Order
 exports.UpdateOrder = async (req, res) => {
   try {
-    const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: req.body,
-      },
-      { new: true }
-    );
-    res.status(200).send(updatedOrder);
+    const order = await Order.findById(req.params.id);
+    
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    // Check if the logged-in user is either an admin or the owner of the order
+    if (req.user.isAdmin || order.userId.toString() === req.user._id.toString()) {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        { new: true }
+      );
+
+      return res.status(200).send(updatedOrder);
+    } else {
+      // If the user is not authorized
+      return res.status(403).send("You are not authorized to update this order");
+    }
   } catch (err) {
     res.status(500).send(err);
   }
 };
+
 
 //Get An Order
 exports.getOrder = async (req, res) => {

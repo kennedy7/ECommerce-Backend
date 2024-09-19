@@ -30,7 +30,7 @@ ordersStatsRouter.get("/api/orders/", isAdmin, getRecentOrders);
 // get the logged-in user's orders
 ordersStatsRouter.get('/api/my-orders/:id', isUser, getUserOrders);
 //update An Order
-ordersStatsRouter.patch("/api/orders/:id", isAdmin, UpdateOrder);
+ordersStatsRouter.patch("/api/orders/:id", auth, UpdateOrder);
 //Get An Order
 ordersStatsRouter.get("/api/orders/findOne/:id", auth, getOrder);
 //delete an order
