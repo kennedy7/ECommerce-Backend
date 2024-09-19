@@ -4,6 +4,7 @@ require("dotenv").config();
 const axios = require("axios");
 const crypto = require("crypto");
 const Order = require("../models/order");
+const { transporter } = require("../utils/nodemailerConfig");
 
 // Paystack secret key
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
@@ -79,7 +80,10 @@ PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' 
           order.metadata = { ...order.metadata, ...data.metadata };
 
           await order.save();
-          console.log('Payment successful:', event);
+      // Send confirmation email after successful payment
+          await sendOrderConfirmationEmail(order.userId, order);
+
+          console.log('ayment successful and email sent:', event);
         }
       }
     } catch (err) {
@@ -119,6 +123,7 @@ PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
         order.metadata = { ...order.metadata, ...transaction.metadata };
 
         await order.save();
+
         return res.status(200).json({ message: 'Payment verified', order });
       }
     } else {
@@ -129,5 +134,38 @@ PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
     res.status(500).json({ message: 'Payment verification failed' });
   }
 });
+
+
+
+// Function to send order confirmation email
+async function sendOrderConfirmationEmail(userId, order) {
+  try {
+    // Retrieve the user based on userId
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log('User not found');
+      return;
+    }
+
+    // Mail options
+    const mailOptions = {
+      to: user.email,
+      from: process.env.EMAIL,
+      subject: 'Order Confirmation',
+      html:`
+      <p>Dear ${user.name},</p>
+      <p>Your order with reference <strong>${order.reference}</strong> has been confirmed and successfully placed.</p>
+      <p>We will notify you once your order is shipped.</p>
+      <p>Thank you for shopping with us!</p>
+    `,
+    };
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    console.log('Order confirmation email sent successfully');
+
+  } catch (error) {
+    console.error('Error sending order confirmation email:', error);
+  }
+}
 
 module.exports = PaystackRouter;
