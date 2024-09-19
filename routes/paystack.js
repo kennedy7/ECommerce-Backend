@@ -11,7 +11,7 @@ const { transporter } = require("../utils/nodemailerConfig");
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 // Initialize Paystack transaction and create an order
-PaystackRouter.post('/paystack/pay', async (req, res) => {
+PaystackRouter.post('/api/paystack/pay', async (req, res) => {
   const { email, amount, address, userId, products } = req.body;
 
   try {
@@ -33,6 +33,8 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
           address,
           products,
         },
+        // callback_url: "http://localhost:5173/",
+        callback_url: "https://powermartelectricals.com/",
       },
       {
         headers: {
@@ -68,7 +70,7 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
 });
 
 // Handle Paystack webhook
-PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+PaystackRouter.post('/api/paystack/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const secret = PAYSTACK_SECRET_KEY;
   const hash = crypto
     .createHmac('sha512', secret)
@@ -107,7 +109,7 @@ PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' 
 });
 
 // Verify Paystack transaction
-PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
+PaystackRouter.get('/api/paystack/verify/:reference', async (req, res) => {
   const reference = req.params.reference;
 
   try {
