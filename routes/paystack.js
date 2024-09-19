@@ -7,17 +7,17 @@ const crypto = require("crypto");
 const Order = require("../models/order");
 const { transporter } = require("../utils/nodemailerConfig");
 
-// Paystack secret key
+// Paystack secret key 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 // Initialize Paystack transaction and create an order
-PaystackRouter.post('/paystack/pay', async (req, res) => {
+PaystackRouter.post("/api/paystack/pay", async (req, res) => {
   const { email, amount, address, userId, products } = req.body;
 
   try {
     // Step 1: Initialize Paystack transaction
     const response = await axios.post(
-      'https://api.paystack.co/transaction/initialize',
+      "https://api.paystack.co/transaction/initialize",
       {
         email,
         amount: amount * 100, // Paystack requires amount in kobo
@@ -26,7 +26,10 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
           address,
           products,
         },
+        callback_url: "http://localhost:5173/",
+        // callback_url: "https://powermartelectricals.com/",
       },
+
       {
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -43,8 +46,8 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
       products,
       amount,
       address,
-      paymentStatus: 'pending', // Initial payment status
-      deliveryStatus: 'pending', // Initial delivery status
+      paymentStatus: "pending", // Initial payment status
+      deliveryStatus: "pending", // Initial delivery status
     });
 
     await newOrder.save();
@@ -52,52 +55,56 @@ PaystackRouter.post('/paystack/pay', async (req, res) => {
     // Step 3: Send the Paystack payment link to the frontend
     res.status(200).json({ authorization_url, reference });
   } catch (error) {
-    console.error('Error initializing payment:', error);
-    res.status(500).json({ message: 'Payment initialization failed' });
+    console.error("Error initializing payment:", error);
+    res.status(500).json({ message: "Payment initialization failed" });
   }
 });
 
 // Handle Paystack webhook
-PaystackRouter.post('/paystack/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const secret = PAYSTACK_SECRET_KEY;
-  const hash = crypto
-    .createHmac('sha512', secret)
-    .update(JSON.stringify(req.body))
-    .digest('hex');
+PaystackRouter.post(
+  "/api/paystack/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const secret = PAYSTACK_SECRET_KEY;
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
 
-  if (hash === req.headers['x-paystack-signature']) {
-    const event = req.body;
-    const data = event.data;
+    if (hash === req.headers["x-paystack-signature"]) {
+      const event = req.body;
+      const data = event.data;
 
-    try {
-      if (event.event === 'charge.success') {
-        // Find the order using the Paystack reference
-        const order = await Order.findOne({ reference: data.reference });
+      try {
+        if (event.event === "charge.success") {
+          // Find the order using the Paystack reference
+          const order = await Order.findOne({ reference: data.reference });
 
-        if (order) {
-          // Update order with successful payment information
-          order.paymentStatus = 'paid';
-          order.deliveryStatus = 'pending'; 
-          order.metadata = { ...order.metadata, ...data.metadata };
+          if (order) {
+            // Update order with successful payment information
+            order.paymentStatus = "paid";
+            order.deliveryStatus = "pending";
+            order.metadata = { ...order.metadata, ...data.metadata };
 
-          await order.save();
-      // Send confirmation email after successful payment
-          await sendOrderConfirmationEmail(order.userId, order);
+            await order.save();
+            // Send confirmation email after successful payment
+            await sendOrderConfirmationEmail(order.userId, order);
 
-          console.log('Payment successful and email sent:', event);
+            console.log("Payment successful and email sent:", event);
+          }
         }
+      } catch (err) {
+        console.error("Order update failed:", err);
       }
-    } catch (err) {
-      console.error('Order update failed:', err);
+    } else {
+      res.status(400).send("Invalid signature");
     }
-  } else {
-    res.status(400).send('Invalid signature');
+    res.status(200).send();
   }
-  res.status(200).send();
-});
+);
 
 // Verify Paystack transaction
-PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
+PaystackRouter.get("/api/paystack/verify/:reference", async (req, res) => {
   const reference = req.params.reference;
 
   try {
@@ -113,29 +120,26 @@ PaystackRouter.get('/paystack/verify/:reference', async (req, res) => {
 
     const transaction = response.data.data;
 
-    if (transaction.status === 'success') {
+    if (transaction.status === "success") {
       // Step 2: Update the order status in the database
       const order = await Order.findOne({ reference });
 
       if (order) {
-        order.paymentStatus = 'paid';
-        order.deliveryStatus = 'pending'; 
+        order.paymentStatus = "paid";
+        order.deliveryStatus = "pending";
         order.metadata = { ...order.metadata, ...transaction.metadata };
-
         await order.save();
 
-        return res.status(200).json({ message: 'Payment verified', order });
+        return res.status(200).json({ message: "Payment verified", order });
       }
     } else {
-      return res.status(400).json({ message: 'Payment verification failed' });
+      return res.status(400).json({ message: "Payment verification failed" });
     }
   } catch (error) {
-    console.error('Payment verification error:', error);
-    res.status(500).json({ message: 'Payment verification failed' });
+    console.error("Payment verification error:", error);
+    res.status(500).json({ message: "Payment verification failed" });
   }
 });
-
-
 
 // Function to send order confirmation email
 async function sendOrderConfirmationEmail(userId, order) {
@@ -143,7 +147,7 @@ async function sendOrderConfirmationEmail(userId, order) {
     // Retrieve the user based on userId
     const user = await User.findById(userId);
     if (!user) {
-      console.log('User not found');
+      console.log("User not found");
       return;
     }
 
@@ -151,8 +155,8 @@ async function sendOrderConfirmationEmail(userId, order) {
     const mailOptions = {
       to: user.email,
       from: process.env.EMAIL,
-      subject: 'Order Confirmation',
-      html:`
+      subject: "Order Confirmation",
+      html: `
       <p>Dear ${user.name},</p>
       <p>Your order with reference <strong>${order.reference}</strong> has been confirmed and successfully placed.</p>
       <p>We will notify you once your order is shipped.</p>
@@ -161,10 +165,9 @@ async function sendOrderConfirmationEmail(userId, order) {
     };
     // Send the email
     await transporter.sendMail(mailOptions);
-    console.log('Order confirmation email sent successfully');
-
+    console.log("Order confirmation email sent successfully");
   } catch (error) {
-    console.error('Error sending order confirmation email:', error);
+    console.error("Error sending order confirmation email:", error);
   }
 }
 
