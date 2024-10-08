@@ -12,10 +12,7 @@ const ProductSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    brand: {
-      type: String,
-      required: true,
-    },
+   
     desc: {
       type: String,
       required: true,

@@ -8,7 +8,7 @@ const Order = require("../models/order");
 const { transporter } = require("../utils/nodemailerConfig");
 
 // Paystack secret key
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
 // Initialize Paystack transaction and create an order
 PaystackRouter.post('/api/paystack/pay', async (req, res) => {
